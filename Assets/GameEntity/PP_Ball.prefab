@@ -9,10 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3286079070921797368}
+  - component: {fileID: 8072985730078431806}
   - component: {fileID: 6756699654668784307}
   - component: {fileID: 7787164747387282944}
   - component: {fileID: -5146475730047071332}
-  - component: {fileID: 8072985730078431806}
   m_Layer: 0
   m_Name: PP_Ball
   m_TagString: Untagged
@@ -35,6 +35,19 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &8072985730078431806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1413005571089153287}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bf99e0eeeb2803e4a9efdb237b1e9c8f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  velocity: 350
 --- !u!212 &6756699654668784307
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -113,7 +126,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!58 &-5146475730047071332
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -149,17 +162,3 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 0.5
---- !u!114 &8072985730078431806
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1413005571089153287}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: bf99e0eeeb2803e4a9efdb237b1e9c8f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  rb: {fileID: 0}
-  direct: {x: 0, y: 0}

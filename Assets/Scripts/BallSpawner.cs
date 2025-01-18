@@ -5,7 +5,8 @@ using UnityEngine;
 public class BallSpawner : MonoBehaviour
 {
     public GameObject ball;
-    private Queue<GameObject> ball_Poiner;
+    private Queue<GameObject> ballPointer;
+    private Vector3 spawnPoint = new Vector3(0,-2,0);
 
     // Start is called before the first frame update
     void Start()
@@ -17,8 +18,7 @@ public class BallSpawner : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.Space))
         {
-            Instantiate(ball, ball.transform.position, ball.transform.rotation);
-            Debug.Log("spawn");
+            Instantiate(ball, transform.position + spawnPoint, ball.transform.rotation);
         }
     }
 
