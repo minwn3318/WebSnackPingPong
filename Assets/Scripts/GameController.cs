@@ -5,20 +5,21 @@ using UnityEngine.InputSystem;
 
 public class GameController : MonoBehaviour
 {
-    [SerializeField] private InputAction load, axis, shoot;
-    [SerializeField] private bool rotateBool;
+    [SerializeField] private InputAction loadShoot, rotate;
+    [SerializeField] private bool turningAllow;
     // Start is called before the first frame update
-    private void Awake()
+    void Awake()
     {
-        load.Enable();
-        axis.Enable();
-        shoot.Enable();
-        load.performed += _ => { rotateBool = true; };
+        loadShoot.Enable();
+        rotate.Enable();
+        loadShoot.performed += _ => { StartCoroutine(TurnDirect()); };
+        loadShoot.canceled += _ => { turningAllow = false; };
     }
 
-    private IEnumerator Rotate()
+    private IEnumerator TurnDirect()
     {
-        while(rotateBool)
+        turningAllow = true;
+        while(turningAllow)
         {
             yield return null;
         }
