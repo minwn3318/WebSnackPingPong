@@ -21,6 +21,7 @@ public class GameController : MonoBehaviour
         turningAllow = true;
         while(turningAllow)
         {
+            Debug.Log("TurnDirect");
             yield return null;
         }
     }
