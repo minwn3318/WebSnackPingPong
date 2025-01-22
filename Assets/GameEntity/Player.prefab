@@ -9,8 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1244935079161263667}
-  - component: {fileID: 8457800145020880848}
   - component: {fileID: 4240190016919710617}
+  - component: {fileID: 7059382460822666384}
+  - component: {fileID: 8457800145020880848}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -34,6 +35,37 @@ Transform:
   - {fileID: 1279442973416583796}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4240190016919710617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3913992156435099185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f05d238c10747914fae4053103055b43, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  turningAllow: 0
+  count: 0
+  directer: {fileID: 0}
+  myPlayer: {fileID: 0}
+  pointerPos: {x: 0, y: 0}
+--- !u!114 &7059382460822666384
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3913992156435099185}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 149429db62991d144ab28a8298cb579d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ball: {fileID: 1413005571089153287, guid: 99d8de5ec09e781418b9587d64ba4325, type: 3}
+  size: 0
 --- !u!212 &8457800145020880848
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -86,21 +118,6 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &4240190016919710617
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3913992156435099185}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f05d238c10747914fae4053103055b43, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  turningAllow: 0
-  count: 0
-  directer: {fileID: 0}
 --- !u!1001 &417425183509668905
 PrefabInstance:
   m_ObjectHideFlags: 0
