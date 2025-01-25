@@ -5,36 +5,49 @@ using UnityEngine;
 public class ShootingBall : MonoBehaviour
 {
     [SerializeField] private Rigidbody2D ballRB;
-    [SerializeField] private float power;
+    [SerializeField] private float speed;
+    [SerializeField] private Vector2 lastVelocity;
+    [SerializeField] private Player myPlayer;
     // Start is called before the first frame update
     void Awake()
     {
         ballRB = GetComponent<Rigidbody2D>();
-        power = 20f;
+        myPlayer = GameObject.FindAnyObjectByType<Player>();
+        speed = 25f;
     }
 
-    public float Poewr
+    public float Speed
     {
         get 
         {
-            return power;
+            return speed;
         }
         set 
-        { 
-            power = value;
+        {
+            speed = value;
         }
     }
     public void Move(Vector2 velocity_v)
     {
-        Debug.Log(velocity_v * power);
-        ballRB.velocity = velocity_v * power;
+        ballRB.velocity = velocity_v * speed;
+        lastVelocity = ballRB.velocity;
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        Debug.Log("reflect");
-        Debug.Log(-collision.transform.position.normalized);
-        Debug.Log(Vector2.Reflect(ballRB.velocity, collision.transform.position.normalized));
-        ballRB.velocity = Vector2.Reflect(ballRB.velocity, -collision.transform.position.normalized);
-    }
+        if(collision.collider.CompareTag("Ball"))
+        {
+            return;
+        }
+        else if(collision.collider.CompareTag("Wall"))
+        {
+            ballRB.velocity = Vector2.zero;
+            myPlayer.Return(this.gameObject);
+            return;
+        }
+        ballRB.velocity = 
+            Mathf.Max(speed, 0f)
+            * Vector2.Reflect(lastVelocity.normalized, collision.contacts[0].normal);
+        lastVelocity = ballRB.velocity;
+    }   
 }

@@ -50,8 +50,11 @@ MonoBehaviour:
   turningAllow: 0
   count: 0
   directer: {fileID: 0}
-  myPlayer: {fileID: 0}
+  player: {fileID: 0}
+  playerPos: {x: 0, y: 0}
   pointerPos: {x: 0, y: 0}
+  directPos: {x: 0, y: 0}
+  polling: {fileID: 0}
 --- !u!114 &7398213439273776993
 MonoBehaviour:
   m_ObjectHideFlags: 0

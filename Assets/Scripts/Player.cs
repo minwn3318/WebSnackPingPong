@@ -20,7 +20,7 @@ public class Player : MonoBehaviour
     public void Awake()
     {
         polling = GetComponent<ShooterQueue>();
-        polling.InitQueue(1);
+        polling.InitQueue(2);
         directer = transform.GetChild(0).gameObject;
         player = transform.gameObject;
         playerPos = new Vector2(0, 1);
@@ -62,7 +62,13 @@ public class Player : MonoBehaviour
             GameObject obj_v = polling.PopQueue();
             ShootingBall ball_v = obj_v.GetComponent<ShootingBall>();
             ball_v.Move(directPos);
-            yield return new WaitForSeconds(0.05f);
+            yield return new WaitForSeconds(0.07f);
         }
+    }
+
+    public void Return(GameObject obj_v)
+    {
+        obj_v.transform.position = player.transform.position;
+        polling.PollingQueue(obj_v);
     }
 }
