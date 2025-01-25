@@ -10,10 +10,6 @@ public class ShooterQueue : MonoBehaviour
     [SerializeField] private GameObject ball;
     [SerializeField] private int size;
     // Start is called before the first frame update
-    void Awake()
-    {
-        InitQueue(10);
-    }
 
     public int Size
     {
@@ -23,30 +19,30 @@ public class ShooterQueue : MonoBehaviour
 
     public void InitQueue(int size_v)
     {
-        size = size_v;
-        shooter = new Queue<GameObject>(size);
-        GameObject[] instantQueue = new GameObject[size];
-        for (int count = 0; count < size; count++)
+        shooter = new Queue<GameObject>(size_v);
+        GameObject[] instantQueue = new GameObject[size_v];
+        for (int count = 0; count < size_v; count++)
         {
             instantQueue[count] = Instantiate(ball, this.transform.position, this.transform.rotation);
         }
         foreach (GameObject obj_v in instantQueue)
         {
-            PushQueue(obj_v);
+            PollingQueue(obj_v);
         }
-        return;
     }
 
-    public void PushQueue(GameObject obj_v)
+    public void PollingQueue(GameObject obj_v)
     {
         obj_v.SetActive(false);
         shooter.Enqueue(obj_v);
+        size++;
     }
 
-    public void PopQueue()
+    public GameObject PopQueue()
     {
         GameObject obj_v = shooter.Dequeue();
         obj_v.SetActive(true);
-
+        size--;
+        return obj_v;
     }
 }

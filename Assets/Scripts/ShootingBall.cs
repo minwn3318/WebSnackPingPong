@@ -7,9 +7,10 @@ public class ShootingBall : MonoBehaviour
     [SerializeField] private Rigidbody2D ballRB;
     [SerializeField] private float power;
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         ballRB = GetComponent<Rigidbody2D>();
+        power = 20f;
     }
 
     public float Poewr
@@ -23,8 +24,17 @@ public class ShootingBall : MonoBehaviour
             power = value;
         }
     }
-    public void Shoot(Vector2 velocity_v)
+    public void Move(Vector2 velocity_v)
     {
-        ballRB.velocity = velocity_v;
+        Debug.Log(velocity_v * power);
+        ballRB.velocity = velocity_v * power;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        Debug.Log("reflect");
+        Debug.Log(-collision.transform.position.normalized);
+        Debug.Log(Vector2.Reflect(ballRB.velocity, collision.transform.position.normalized));
+        ballRB.velocity = Vector2.Reflect(ballRB.velocity, -collision.transform.position.normalized);
     }
 }
