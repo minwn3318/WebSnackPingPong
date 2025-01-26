@@ -3,13 +3,21 @@ using System.Collections.Generic;
 using System.Drawing;
 using Unity.Jobs.LowLevel.Unsafe;
 using UnityEngine;
+using static UnityEditor.Experimental.GraphView.Port;
 
 public class ShooterQueue : MonoBehaviour
 {
     [SerializeField] private Queue<GameObject> shooter;
     [SerializeField] private GameObject ball;
+    [SerializeField] private int capacity = 0;
     [SerializeField] private int size;
     // Start is called before the first frame update
+
+    public int Capacity
+    {
+        get { return capacity; }
+        set { capacity = value; }
+    }
 
     public int Size
     {
@@ -19,9 +27,10 @@ public class ShooterQueue : MonoBehaviour
 
     public void InitQueue(int size_v)
     {
-        shooter = new Queue<GameObject>(size_v);
-        GameObject[] instantQueue = new GameObject[size_v];
-        for (int count = 0; count < size_v; count++)
+        size = size_v;
+        shooter = new Queue<GameObject>(size);
+        GameObject[] instantQueue = new GameObject[size];
+        for (int count = 0; count < size; count++)
         {
             instantQueue[count] = Instantiate(ball, this.transform.position, this.transform.rotation);
         }
@@ -35,14 +44,14 @@ public class ShooterQueue : MonoBehaviour
     {
         obj_v.SetActive(false);
         shooter.Enqueue(obj_v);
-        size++;
+        capacity++;
     }
 
     public GameObject PopQueue()
     {
         GameObject obj_v = shooter.Dequeue();
         obj_v.SetActive(true);
-        size--;
+        capacity--;
         return obj_v;
     }
 }

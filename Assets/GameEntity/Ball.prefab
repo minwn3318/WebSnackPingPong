@@ -13,9 +13,9 @@ GameObject:
   - component: {fileID: 6756699654668784307}
   - component: {fileID: 7787164747387282944}
   - component: {fileID: -5146475730047071332}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Ball
-  m_TagString: Ball
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -48,8 +48,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ballRB: {fileID: 0}
-  speed: 0
+  speed: 35
+  comeBackHome: 0
+  time: 1
   lastVelocity: {x: 0, y: 0}
+  myPlayer: {fileID: 0}
 --- !u!212 &6756699654668784307
 SpriteRenderer:
   m_ObjectHideFlags: 0
