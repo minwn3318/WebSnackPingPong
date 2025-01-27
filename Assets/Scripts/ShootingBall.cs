@@ -9,6 +9,7 @@ public class ShootingBall : MonoBehaviour
     [SerializeField] private float speed = 35f;
     [SerializeField] private bool comeBackHome = false;
     [SerializeField] private float time = 1f;
+    [SerializeField] private float forceTime = 3f;
     [SerializeField] private Vector2 lastVelocity;
     [SerializeField] private Player myPlayer;
     // Start is called before the first frame update
@@ -34,6 +35,7 @@ public class ShootingBall : MonoBehaviour
         StartCoroutine(ComeBakcAllow());
         ballRB.velocity = velocity_v * speed;
         lastVelocity = ballRB.velocity;
+        StartCoroutine(ForceReturn());
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
@@ -49,11 +51,12 @@ public class ShootingBall : MonoBehaviour
             Mathf.Max(speed, 0f) * 
             Vector2.Reflect(lastVelocity.normalized, collision.contacts[0].normal);
         lastVelocity = ballRB.velocity;
+        Debug.Log("this gameObject : "+ lastVelocity.magnitude);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if(!comeBackHome) return;
+        if (!comeBackHome) return;
         ballRB.velocity = Vector2.zero;
         comeBackHome = false;
         myPlayer.Return(this.gameObject);
@@ -64,5 +67,11 @@ public class ShootingBall : MonoBehaviour
     {
         yield return new WaitForSeconds(time);
         comeBackHome=true;    
+    }
+
+    private IEnumerator ForceReturn()
+    {
+        yield return new WaitForSeconds(forceTime);
+        myPlayer.Return(this.gameObject);
     }
 }

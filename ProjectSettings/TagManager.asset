@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Wall
+  - FirstStap
   layers:
   - Default
   - TransparentFX
@@ -12,8 +13,8 @@ TagManager:
   - Block
   - Water
   - UI
-  - 
-  - 
+  - Ball
+  - Player
   - 
   - 
   - 

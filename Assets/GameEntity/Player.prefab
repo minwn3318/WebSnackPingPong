@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7398213439273776993}
   - component: {fileID: 8457800145020880848}
   - component: {fileID: 2108087008271517972}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -30,7 +30,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -10, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 1}
+  m_LocalScale: {x: 1.3, y: 1.3, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1279442973416583796}
@@ -51,10 +51,11 @@ MonoBehaviour:
   turningAllow: 0
   clickAllow: 1
   count: 0
+  ballCount: 10
   gap: 0.05
+  playerPos: {x: 0, y: 0}
   directer: {fileID: 0}
   player: {fileID: 0}
-  playerPos: {x: 0, y: 0}
   pointerPos: {x: 0, y: 0}
   directPos: {x: 0, y: 0}
   polling: {fileID: 0}
@@ -188,7 +189,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1444392575916578397, guid: a75b9fcfc09484043b08370690069f60, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.2
+      value: 1.7
       objectReference: {fileID: 0}
     - target: {fileID: 1444392575916578397, guid: a75b9fcfc09484043b08370690069f60, type: 3}
       propertyPath: m_LocalPosition.z

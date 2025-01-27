@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 6756699654668784307}
   - component: {fileID: 7787164747387282944}
   - component: {fileID: -5146475730047071332}
-  m_Layer: 2
+  m_Layer: 6
   m_Name: Ball
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -51,6 +51,7 @@ MonoBehaviour:
   speed: 35
   comeBackHome: 0
   time: 1
+  forceTime: 3
   lastVelocity: {x: 0, y: 0}
   myPlayer: {fileID: 0}
 --- !u!212 &6756699654668784307

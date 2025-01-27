@@ -9,7 +9,7 @@ public class Player : MonoBehaviour
     [SerializeField] private bool turningAllow = false;
     [SerializeField] private bool clickAllow = true;
     [SerializeField] private int count = 0;
-    [SerializeField] private int ballCount = 20;
+    [SerializeField] private int ballCount = 10;
     [SerializeField] private float gap = 0.04f;
     [SerializeField] private Vector2 playerPos = new Vector2(0, 1);
     [SerializeField] private GameObject directer;

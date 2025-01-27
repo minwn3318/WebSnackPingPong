@@ -5,32 +5,24 @@ using UnityEngine;
 
 public class BlockGroup : MonoBehaviour
 {
-    [SerializeField] private GameObject block;
-    [SerializeField] private List<List<GameObject>> rowBlocks;
-    [SerializeField] private int columnSize =7;
-    [SerializeField] private int rowSize = 12;
+    [SerializeField] private List<GameObject> blocks = new List<GameObject>();
+    [SerializeField] private int arrySize = 84;
+    [SerializeField] private int firstSize = 21;
     // Start is called before the first frame update
     void Awake()
     {
-        rowBlocks = new List<List<GameObject>>();
-        float blockPosX = this.transform.position.x;
-        float blockPosY = this.transform.position.y;
-        float blockGap = 2f;
-
-        for(int i = 0; i < rowSize; i++)
+        for(int i = 0; i < arrySize; i++)
         {
-            List<GameObject> columnBlocks = new List<GameObject>();
-            for(int j = 0; j < columnSize; j++)
+            GameObject obj_v = transform.GetChild(i).gameObject;
+            blocks.Add(obj_v);
+        }
+        if(this.CompareTag("FirstStap"))
+        {
+            for(int i = firstSize; i < arrySize; i++)
             {
-                Vector2 blockPos = new Vector2(blockPosX, blockPosY);
-                Debug.Log(blockPos);
-                columnBlocks.Add(Instantiate(block, blockPos, this.transform.rotation));
-                blockPosX += blockGap;
-                if (blockPosX > -this.transform.position.x) blockPosX = this.transform.position.x; 
+                Block obj_v = blocks[i].GetComponent<Block>();
+                obj_v.EnableInteract();
             }
-            rowBlocks.Add(columnBlocks);
-            blockPosY += blockGap;
         }
     }
-
 }
