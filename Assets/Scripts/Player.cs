@@ -1,6 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,8 +7,8 @@ public class Player : MonoBehaviour
     [SerializeField] private bool turningAllow = false;
     [SerializeField] private bool clickAllow = true;
     [SerializeField] private int count = 0;
-    [SerializeField] private int ballCount = 10;
-    [SerializeField] private float gap = 0.04f;
+    [SerializeField] private int ballCount = 5;
+    [SerializeField] private float gap = 0.05f;
     [SerializeField] private Vector2 playerPos = new Vector2(0, 1);
     [SerializeField] private GameObject directer;
     [SerializeField] private GameObject player;
@@ -30,10 +28,16 @@ public class Player : MonoBehaviour
     }
     public void OnLoadShoot()
     {
-        if (!clickAllow) return;
+        Debug.Log(clickAllow);
+        if (!clickAllow)
+        {
+            Debug.Log("not click allow");
+            return;
+        }
         count++;
         count %= 2;
         if (count == 1) return;
+        if (polling.Capacity < polling.Size) return;
         turningAllow = !turningAllow;
         if(turningAllow)
         {
@@ -42,6 +46,8 @@ public class Player : MonoBehaviour
         }
         directer.SetActive(false);
         StartCoroutine(Shooting());
+        clickAllow = false;
+        turningAllow = false;
     }
 
     public void OnRotate(InputAction.CallbackContext context)
@@ -58,12 +64,11 @@ public class Player : MonoBehaviour
 
     public IEnumerator Shooting()
     {
-        clickAllow = false;
         while(polling.Capacity != 0)
         {
             GameObject obj_v = polling.PopQueue();
             obj_v.transform.position = player.transform.position;
-            ShootingBall ball_v = obj_v.GetComponent<ShootingBall>();
+            Ball ball_v = obj_v.GetComponent<Ball>();
             ball_v.Move(directPos);
             yield return new WaitForSeconds(gap);
         }

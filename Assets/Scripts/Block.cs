@@ -1,12 +1,10 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Block : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer renderer;
     [SerializeField] private Collider2D col;
-    [SerializeField] private int count = 10;
+    [SerializeField] private int count = 20;
     // Start is called before the first frame update
     void Awake()
     {

@@ -51,7 +51,7 @@ MonoBehaviour:
   turningAllow: 0
   clickAllow: 1
   count: 0
-  ballCount: 10
+  ballCount: 5
   gap: 0.05
   playerPos: {x: 0, y: 0}
   directer: {fileID: 0}

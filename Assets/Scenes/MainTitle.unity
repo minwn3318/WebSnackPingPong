@@ -461,6 +461,14 @@ PrefabInstance:
       propertyPath: m_TagString
       value: FirstStap
       objectReference: {fileID: 0}
+    - target: {fileID: 6121085982918281794, guid: 08fae7008f8d9314cbbb047fa92bc53d, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6520729039778315131, guid: 08fae7008f8d9314cbbb047fa92bc53d, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -910,7 +918,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4240190016919710617, guid: b8e17c810c9435741aa26e93095b8129, type: 3}
       propertyPath: ballCount
-      value: 15
+      value: 5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
