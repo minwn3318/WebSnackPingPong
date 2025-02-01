@@ -69,6 +69,5 @@ public class Player : MonoBehaviour
         obj_v.transform.position = player.transform.position;
         polling.PollingQueue(obj_v);
         if(polling.Capacity == polling.Size) clickAllow = true;
-        Debug.Log(clickAllow);
     }
 }
