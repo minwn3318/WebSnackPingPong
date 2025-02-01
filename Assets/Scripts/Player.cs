@@ -6,7 +6,6 @@ public class Player : MonoBehaviour
 {
     [SerializeField] private bool turningAllow = false;
     [SerializeField] private bool clickAllow = true;
-    [SerializeField] private int count = 0;
     [SerializeField] private int ballCount = 5;
     [SerializeField] private float gap = 0.05f;
     [SerializeField] private Vector2 playerPos = new Vector2(0, 1);
@@ -16,8 +15,6 @@ public class Player : MonoBehaviour
     [SerializeField] private Vector2 directPos;
     [SerializeField] private ShooterQueue polling;
 
-    // Start is called before the first frame update
-
     public void Awake()
     {
         polling = GetComponent<ShooterQueue>();
@@ -26,28 +23,21 @@ public class Player : MonoBehaviour
         player = transform.gameObject;
         directer.SetActive(false);
     }
-    public void OnLoadShoot()
+    public void OnLoadShoot(InputAction.CallbackContext context)
     {
-        Debug.Log(clickAllow);
-        if (!clickAllow)
-        {
-            Debug.Log("not click allow");
-            return;
-        }
-        count++;
-        count %= 2;
-        if (count == 1) return;
-        if (polling.Capacity < polling.Size) return;
-        turningAllow = !turningAllow;
-        if(turningAllow)
+        if (!clickAllow) return;
+        if (context.performed)
         {
             directer.SetActive(true);
-            return;
+            turningAllow = true;
         }
-        directer.SetActive(false);
-        StartCoroutine(Shooting());
-        clickAllow = false;
-        turningAllow = false;
+        else if (context.canceled && turningAllow)
+        {
+            StartCoroutine(Shooting());
+            directer.SetActive(false);
+            clickAllow = false;
+            turningAllow = false;
+        }
     }
 
     public void OnRotate(InputAction.CallbackContext context)
@@ -79,5 +69,6 @@ public class Player : MonoBehaviour
         obj_v.transform.position = player.transform.position;
         polling.PollingQueue(obj_v);
         if(polling.Capacity == polling.Size) clickAllow = true;
+        Debug.Log(clickAllow);
     }
 }

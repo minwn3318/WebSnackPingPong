@@ -27,11 +27,18 @@ public class Ball : MonoBehaviour
         {
             //Debug.Log("before : " + ballRB.velocity + ", " +ballRB.velocity.magnitude);
             float gapManitude = speed - ballRB.velocity.magnitude;
-            Vector2 modifyVector = -((lastVelocity.normalized * gapManitude) + ballRB.velocity);
+            Vector2 modifyVector = 
+                -((lastVelocity.normalized * gapManitude * (speed / speedLose)) 
+                + ballRB.velocity);
             //Debug.Log("gap magnitude : "+ modifyVector.magnitude);
             //Debug.Log("gap Vector : " + modifyVector);
             ballRB.velocity = modifyVector;
             //Debug.Log("after : " + ballRB.velocity + ", " + ballRB.velocity.magnitude);
+        }
+        if(ballRB.velocity == -lastVelocity)
+        {
+            ballRB.velocity = new Vector2(ballRB.velocity.y, ballRB.velocity.x);
+            Debug.Log("last after : " + ballRB.velocity + ", " + ballRB.velocity.magnitude);
         }
     }
 
