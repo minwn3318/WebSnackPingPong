@@ -6,15 +6,15 @@ using UnityEngine.SocialPlatforms.Impl;
 
 public class GameManager : MonoBehaviour
 {
+    [SerializeField] private GameObject firstBlockGroup;
+    [SerializeField] private GameObject secondBlockGroup;
     [SerializeField] private int score;
     [SerializeField] private int stage;
-    [SerializeField] private GameObject blocksGrupsFirst;
-    [SerializeField] private GameObject blocksGrupsSecond;
 
     void Awake()
     {
-        blocksGrupsFirst = transform.GetChild(0).gameObject;
-        blocksGrupsSecond = transform.GetChild(1).gameObject;
+        firstBlockGroup = transform.GetChild(0).gameObject;
+        secondBlockGroup = transform.GetChild(1).gameObject;
         Re();
     }
 

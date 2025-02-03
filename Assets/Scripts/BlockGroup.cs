@@ -3,14 +3,13 @@ using UnityEngine;
 
 public class BlockGroup : MonoBehaviour
 {
-    [SerializeField] private GameManager gameManager;
     [SerializeField] private List<GameObject> blocks = new List<GameObject>();
+    [SerializeField] private BlockCounter couter;
     [SerializeField] private int arrySize = 84;
     [SerializeField] private int firstSize = 21;
     void Awake()
     {
-        gameManager = FindObjectOfType<GameManager>();
-
+        couter = FindAnyObjectByType<BlockCounter>();
         for (int i = 0; i < arrySize; i++)
         {
             GameObject obj_v = transform.GetChild(i).gameObject;
@@ -18,11 +17,10 @@ public class BlockGroup : MonoBehaviour
         }
         if(this.CompareTag("FirstStap"))
         {
-            int currentStage = gameManager.Stage;
             for(int i = firstSize; i < arrySize; i++)
             {
                 Block obj_v = blocks[i].GetComponent<Block>();
-                obj_v.EnableInteract(10);
+                obj_v.EnableInteract(8);
             }
         }
     }
