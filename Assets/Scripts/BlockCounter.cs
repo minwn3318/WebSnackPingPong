@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class BlockCounter : MonoBehaviour
@@ -23,45 +24,46 @@ public class BlockCounter : MonoBehaviour
         List<List<float>> probList = new List<List<float>>();
         List<float> prob = new List<float>();
 
-        prob.Clear();
-        probList.Clear();
         probListSelected.Clear();
+        probList.Clear();
+        prob.Clear();
 
-        for (int i = 0; i < 2; i++)
-        {
-            for(int j = 0; j < 2; j++)
-            {
-
-            }
-        }
         prob.Add(0.5f);
         prob.Add(0.5f);
-        probList.Add(prob);
+        probList.Add(prob.ToList());
 
         prob.Clear();
 
         prob.Add(0.4f);
         prob.Add(0.3f);
         prob.Add(0.3f);
-        probList.Add(prob);
-        probListSelected.Add(probList);
+        probList.Add(prob.ToList());
+        probListSelected.Add(probList.ToList());
 
         prob.Clear();
         probList.Clear();
 
         prob.Add(0.6f);
         prob.Add(0.4f);
-        probList.Add(prob);
+        probList.Add(prob.ToList());
 
         prob.Clear();
 
         prob.Add(0.3f);
-        prob.Add(0.3f);
         prob.Add(0.4f);
-        probList.Add(prob);
-        probListSelected.Add(probList);
-
-        Debug.Log(probListSelected);
+        prob.Add(0.4f);
+        probList.Add(prob.ToList());
+        probListSelected.Add(probList.ToList());
+        Debug.Log(probListSelected[0][0][0]);
+        Debug.Log(probListSelected[0][0][1]);
+        Debug.Log(probListSelected[0][1][0]);
+        Debug.Log(probListSelected[0][1][1]);
+        Debug.Log(probListSelected[0][1][2]);
+        Debug.Log(probListSelected[1][0][0]);
+        Debug.Log(probListSelected[1][0][1]);
+        Debug.Log(probListSelected[1][1][0]);
+        Debug.Log(probListSelected[1][1][1]);
+        Debug.Log(probListSelected[1][1][2]);
 
     }
     public int CaculateCountFromStage()
