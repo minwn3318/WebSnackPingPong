@@ -17,11 +17,17 @@ public class BlockGroup : MonoBehaviour
         }
         if(this.CompareTag("FirstStap"))
         {
-            for(int i = firstSize; i < arrySize; i++)
-            {
-                Block obj_v = blocks[i].GetComponent<Block>();
-                obj_v.EnableInteract(8);
-            }
+            SettingBlockCount(firstSize);
+        }
+    }
+
+    public void SettingBlockCount(int start)
+    {
+        couter.SelectProb();
+        for (int i = start; i < arrySize; i++)
+        {
+            Block obj_v = blocks[i].GetComponent<Block>();
+            obj_v.EnableInteract(couter.ChooseProbAndCount());
         }
     }
 }

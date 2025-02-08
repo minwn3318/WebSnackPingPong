@@ -6,6 +6,7 @@ using UnityEngine;
 public class BlockCounter : MonoBehaviour
 {
     [SerializeField] private int stageGap;
+    [SerializeField] private int stageRest;
     [SerializeField] private int lastRemain;
     [SerializeField] private int forNum;
     [SerializeField] private int countIndex;
@@ -18,6 +19,7 @@ public class BlockCounter : MonoBehaviour
     {
         gameManager = GetComponent<GameManager>();
         stageGap = 3;
+        stageRest = 0;
         lastRemain = -1;
         forNum = 0;
         countIndex = 0;
@@ -26,9 +28,24 @@ public class BlockCounter : MonoBehaviour
         countList = new List<int>() { 8, 16, 24, 32, 40};
     }
 
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.S))
+        {
+            Debug.Log("S : " + gameManager.Stage);
+            SelectProb();
+        }
+        if(Input.GetKeyDown(KeyCode.C))
+        {
+            Debug.Log("C : " + +gameManager.Stage);
+            ChooseProbAndCount();
+        }
+    }
+
     public void SelectProb()
     {
-        int stageRest = gameManager.Stage % stageGap;
+        stageRest = gameManager.Stage % stageGap;
+        //Debug.Log("stageRest : "+stageRest);
         switch (stageRest)
         {
             case 0:
@@ -40,23 +57,39 @@ public class BlockCounter : MonoBehaviour
                 probIndex = 0;
                 break;
         }
-        if(gameManager.Stage < 10 && lastRemain == 0)
+        //Debug.Log("forNum : "+forNum);
+        //Debug.Log("probIndex : " + probIndex);
+        if (gameManager.Stage < 10 && lastRemain == 0)
         {
             countIndex++;
+            Debug.Log("countIndex Up : " + countIndex);
+
         }
         lastRemain = stageRest;
-        if(gameManager.Stage == 10)
+        //Debug.Log("lastRemain : " + lastRemain);
+        //Debug.Log("countIndex : " + countIndex);
+        if (gameManager.Stage == 10)
         {
             countList.Clear();
-            countList = new List<int>() { 24, 32, 40 };
+            countList = new List<int>() { 32, 40 };
             probList.Clear();
             probList = new List<float>() { 0.6f, 0.4f, 0.4f, 0.3f, 0.3f};
-            countIndex = 1;
+            countIndex = 0;
         }
+        Debug.Log("end");
     }
 
-    int ChooseProbAndCount()
+    public int ChooseProbAndCount()
     {
+        /*int lastCountIndex = countIndex;
+        for(int i = probIndex; i < forNum; i++)
+        {
+            Debug.Log(probList[i]);
+            Debug.Log(countList[countIndex]);
+            Debug.Log("countIndex : " + countIndex);
+            countIndex++;
+        }
+        countIndex = lastCountIndex;*/
         float total = 0;
         int lastCountIndex = countIndex;
 
@@ -65,6 +98,18 @@ public class BlockCounter : MonoBehaviour
             total += probList[j];
         }
         float randomPoint = Random.value * total;
+
+        if (gameManager.Stage > 9)
+        {
+            if(stageRest == 1)
+            {
+                countList.RemoveAt(24);
+            }
+            else if(stageRest == 2)
+            {
+                countList.Insert(1, 24);
+            }
+        }
 
         for (int i = probIndex; i < forNum; i++)
         {
