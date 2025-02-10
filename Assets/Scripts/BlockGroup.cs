@@ -10,6 +10,7 @@ public class BlockGroup : MonoBehaviour
     void Awake()
     {
         couter = FindAnyObjectByType<BlockCounter>();
+        Debug.Log(couter);
         for (int i = 0; i < arrySize; i++)
         {
             GameObject obj_v = transform.GetChild(i).gameObject;
@@ -18,16 +19,19 @@ public class BlockGroup : MonoBehaviour
         if(this.CompareTag("FirstStap"))
         {
             SettingBlockCount(firstSize);
+            couter.Test();
+            couter.SelectProb();
+            couter.ChooseProbAndCount();
         }
     }
 
     public void SettingBlockCount(int start)
     {
-        couter.SelectProb();
+        Debug.Log("now setting");
         for (int i = start; i < arrySize; i++)
         {
             Block obj_v = blocks[i].GetComponent<Block>();
-            obj_v.EnableInteract(couter.ChooseProbAndCount());
+            obj_v.EnableInteract(8);
         }
     }
 }

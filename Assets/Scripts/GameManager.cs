@@ -8,14 +8,14 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] private GameObject firstBlockGroup;
     [SerializeField] private GameObject secondBlockGroup;
-    [SerializeField] private int score;
-    [SerializeField] private int stage;
+    [SerializeField] private int score = 0;
+    [SerializeField] private int stage = 1;
 
     void Awake()
     {
+        Re();
         firstBlockGroup = transform.GetChild(0).gameObject;
         secondBlockGroup = transform.GetChild(1).gameObject;
-        Re();
     }
 
     public int Stage

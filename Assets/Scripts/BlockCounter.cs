@@ -18,6 +18,7 @@ public class BlockCounter : MonoBehaviour
     private void Awake()
     {
         gameManager = GetComponent<GameManager>();
+        Debug.Log(gameManager);
         stageGap = 3;
         stageRest = 0;
         lastRemain = -1;
@@ -28,7 +29,7 @@ public class BlockCounter : MonoBehaviour
         countList = new List<int>() { 8, 16, 24, 32, 40};
     }
 
-    private void Update()
+    /*private void Update()
     {
         if(Input.GetKeyDown(KeyCode.S))
         {
@@ -40,11 +41,35 @@ public class BlockCounter : MonoBehaviour
             Debug.Log("C : " + +gameManager.Stage);
             ChooseProbAndCount();
         }
+    }*/
+
+    public void Test()
+    {
+        Debug.Log(gameManager);
+        Debug.Log(stageGap);
+        Debug.Log(stageRest);
+        Debug.Log(lastRemain);
+        Debug.Log(forNum);
+        Debug.Log(countIndex);
+        Debug.Log(probIndex);
+        for(int i =0; i < 5; i++)
+        {
+            Debug.Log(probList[i]);
+        }
+        for (int i = 0; i < 5; i++)
+        {
+            Debug.Log(countList[i]);
+        }
+        Debug.Log("I am Counter");
     }
 
     public void SelectProb()
     {
-        stageRest = gameManager.Stage % stageGap;
+        Debug.Log(gameManager);
+        //Debug.Log(gameManager.Stage);
+        //stageRest = gameManager.Stage % stageGap;
+        Debug.Log("I am SelectProb");
+        /*
         //Debug.Log("stageRest : "+stageRest);
         switch (stageRest)
         {
@@ -62,7 +87,7 @@ public class BlockCounter : MonoBehaviour
         if (gameManager.Stage < 10 && lastRemain == 0)
         {
             countIndex++;
-            Debug.Log("countIndex Up : " + countIndex);
+            //Debug.Log("countIndex Up : " + countIndex);
 
         }
         lastRemain = stageRest;
@@ -77,11 +102,15 @@ public class BlockCounter : MonoBehaviour
             countIndex = 0;
         }
         Debug.Log("end");
+        */
     }
 
     public int ChooseProbAndCount()
     {
+        Debug.Log(gameManager);
+        Debug.Log("ChooseProbAndCount");
         /*int lastCountIndex = countIndex;
+
         for(int i = probIndex; i < forNum; i++)
         {
             Debug.Log(probList[i]);
@@ -90,6 +119,7 @@ public class BlockCounter : MonoBehaviour
             countIndex++;
         }
         countIndex = lastCountIndex;*/
+        /*
         float total = 0;
         int lastCountIndex = countIndex;
 
@@ -126,5 +156,7 @@ public class BlockCounter : MonoBehaviour
         }
         countIndex = lastCountIndex;
         return forNum;
+        */
+        return 1;
     }
 }
