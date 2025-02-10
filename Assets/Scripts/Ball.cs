@@ -38,7 +38,7 @@ public class Ball : MonoBehaviour
         if(ballRB.velocity == -lastVelocity)
         {
             ballRB.velocity = new Vector2(ballRB.velocity.y, ballRB.velocity.x);
-            Debug.Log("last after : " + ballRB.velocity + ", " + ballRB.velocity.magnitude);
+            //Debug.Log("last after : " + ballRB.velocity + ", " + ballRB.velocity.magnitude);
         }
     }
 

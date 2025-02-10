@@ -5,8 +5,9 @@ public class Block : MonoBehaviour
 {
     [SerializeField] private SpriteRenderer renderer;
     [SerializeField] private Collider2D col;
-    [SerializeField] private int count = 0;
     [SerializeField] private GameObject textingObj;
+
+    [SerializeField] private int count = 0;
     [SerializeField] private TMP_Text textCount;
     // Start is called before the first frame update
     void Awake()

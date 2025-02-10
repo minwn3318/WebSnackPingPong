@@ -4,25 +4,20 @@ using UnityEngine;
 public class BlockGroup : MonoBehaviour
 {
     [SerializeField] private List<GameObject> blocks = new List<GameObject>();
+    [SerializeField] private Transform groupPosition;
+    [SerializeField] private bool currentStage;
     [SerializeField] private BlockCounter couter;
     [SerializeField] private int arrySize = 84;
     [SerializeField] private int firstSize = 21;
     void Awake()
     {
         couter = FindAnyObjectByType<BlockCounter>();
-        Debug.Log(couter);
+        groupPosition = GetComponent<Transform>();
         for (int i = 0; i < arrySize; i++)
         {
             GameObject obj_v = transform.GetChild(i).gameObject;
             blocks.Add(obj_v);
         }
-        /*if(this.CompareTag("FirstStap"))
-        {
-            SettingBlockCount(firstSize);
-            couter.Test();
-            couter.SelectProb();
-            couter.ChooseProbAndCount();
-        }*/
     }
 
     public void SettingBlockCount(int start)
@@ -33,5 +28,10 @@ public class BlockGroup : MonoBehaviour
             Block obj_v = blocks[i].GetComponent<Block>();
             obj_v.EnableInteract(couter.ChooseProbAndCount());
         }
+    }
+
+    public void ResetBlockGruop()
+    {
+        
     }
 }

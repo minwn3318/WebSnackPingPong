@@ -8,9 +8,10 @@ public class Player : MonoBehaviour
     [SerializeField] private bool clickAllow = false;
     [SerializeField] private int ballCount = 5;
     [SerializeField] private float gap = 0.05f;
+    [SerializeField] private SpriteRenderer playerRender;
     [SerializeField] private Vector2 playerPos = new Vector2(0, 1);
     [SerializeField] private GameObject directer;
-    [SerializeField] private GameObject player;
+    [SerializeField] private Transform playerTrans;
     [SerializeField] private Vector2 pointerPos;
     [SerializeField] private Vector2 directPos;
     [SerializeField] private ShooterQueue polling;
@@ -19,13 +20,16 @@ public class Player : MonoBehaviour
     {
         polling = GetComponent<ShooterQueue>();
         directer = transform.GetChild(0).gameObject;
-        player = transform.gameObject;
+        playerTrans = GetComponent<Transform>();
+        playerRender = GetComponent<SpriteRenderer>();
         directer.SetActive(false);
+        playerRender.enabled = false;
     }
 
     public void SpawnPlayer()
     {
-        player.SetActive(true);
+        playerRender.enabled = true;
+        directer.SetActive(true);
         clickAllow = true;
         polling.InitQueue(ballCount);
     }
@@ -34,7 +38,8 @@ public class Player : MonoBehaviour
     {
         polling.RemoveQueue();
         clickAllow = false;
-        player.SetActive(false);
+        directer.SetActive(false);
+        playerRender.enabled = false;
     }
 
     public void OnLoadShoot(InputAction.CallbackContext context)
@@ -58,12 +63,12 @@ public class Player : MonoBehaviour
     {
         if (!turningAllow) return;
         pointerPos = context.ReadValue<Vector2>();
-        directPos = (pointerPos - (Vector2)player.transform.position).normalized;
+        directPos = (pointerPos - (Vector2)playerTrans.position).normalized;
         if (Vector2.Dot(playerPos, directPos) < 0)
         {
             return;
         }
-        player.transform.up = directPos;
+        playerTrans.up = directPos;
     }
 
     public IEnumerator Shooting()
@@ -71,7 +76,7 @@ public class Player : MonoBehaviour
         while(polling.Capacity != 0)
         {
             GameObject obj_v = polling.PopQueue();
-            obj_v.transform.position = player.transform.position;
+            obj_v.transform.position = playerTrans.position;
             Ball ball_v = obj_v.GetComponent<Ball>();
             ball_v.Move(directPos);
             yield return new WaitForSeconds(gap);
@@ -80,7 +85,7 @@ public class Player : MonoBehaviour
 
     public void Return(GameObject obj_v)
     {
-        obj_v.transform.position = player.transform.position;
+        obj_v.transform.position = playerTrans.position;
         polling.PollingQueue(obj_v);
         if(polling.Capacity == polling.Size) clickAllow = true;
     }

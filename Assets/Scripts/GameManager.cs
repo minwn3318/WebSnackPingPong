@@ -1,24 +1,23 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private GameObject firstBlockGroup;
-    [SerializeField] private GameObject secondBlockGroup;
+    [SerializeField] private BlockGroup firstBlockGroup;
+    [SerializeField] private BlockGroup secondBlockGroup;
     [SerializeField] private Player playerScript;
-    [SerializeField] private bool playing;
     [SerializeField] private int score;
     [SerializeField] private int stage;
 
     void Awake()
     {
-        firstBlockGroup = transform.GetChild(0).gameObject;
-        secondBlockGroup = transform.GetChild(1).gameObject;
+        firstBlockGroup = transform.GetChild(0).GetComponent<BlockGroup>();
+        secondBlockGroup = transform.GetChild(1).GetComponent<BlockGroup>();
         playerScript = FindAnyObjectByType<Player>();
-        playing = false;
     }
     private void Update()
     {
@@ -26,6 +25,7 @@ public class GameManager : MonoBehaviour
         {
             Debug.Log("GameStart");
             playerScript.SpawnPlayer();
+            StartSetting();
         }
         else if (Input.GetKeyDown(KeyCode.Escape))
         {
@@ -44,11 +44,15 @@ public class GameManager : MonoBehaviour
         stage++;
     }
 
-    public void ReStart() 
+    public void ToggleCurrentStage()
+    {
+        
+    }
+
+    public void StartSetting() 
     {
         score = 0;
         stage = 1;
-        playing = true;
     }
 
 }
