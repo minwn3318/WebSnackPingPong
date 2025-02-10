@@ -63,7 +63,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2902dfc673868b48bd26c73468ca6ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  intiCount: 0
+  stageGap: 0
+  stageRest: 0
+  lastRemain: 0
+  forNum: 0
+  countIndex: 0
+  probIndex: 0
+  probList: []
+  countList: 
   gameManager: {fileID: 0}
 --- !u!1001 &1105102822258394139
 PrefabInstance:

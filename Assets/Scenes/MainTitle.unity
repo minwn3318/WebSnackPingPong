@@ -734,7 +734,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!1001 &1554224264592626571
+--- !u!1001 &1592876447132903318
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -786,10 +786,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 3913992156435099185, guid: b8e17c810c9435741aa26e93095b8129, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -805,8 +801,12 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1060962840967850616, guid: 0d5a0f8449b6d8d4aa4ba44ea5525b86, type: 3}
       propertyPath: m_Name
-      value: GameManager
+      value: GameSceneManager
       objectReference: {fileID: 0}
+    - target: {fileID: 6743140454467766180, guid: 0d5a0f8449b6d8d4aa4ba44ea5525b86, type: 3}
+      propertyPath: gamePlayer
+      value: 
+      objectReference: {fileID: 3913992156435099185, guid: b8e17c810c9435741aa26e93095b8129, type: 3}
     - target: {fileID: 7109133946562632772, guid: 0d5a0f8449b6d8d4aa4ba44ea5525b86, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1365,5 +1365,5 @@ SceneRoots:
   - {fileID: 581855627}
   - {fileID: 1037512634}
   - {fileID: 913197135}
-  - {fileID: 1554224264592626571}
+  - {fileID: 1592876447132903318}
   - {fileID: 5977098160616639764}

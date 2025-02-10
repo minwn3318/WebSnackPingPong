@@ -112,7 +112,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   turningAllow: 0
-  clickAllow: 1
+  clickAllow: 0
   ballCount: 5
   gap: 0.05
   playerPos: {x: 0, y: 0}

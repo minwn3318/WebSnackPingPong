@@ -16,7 +16,6 @@ public class Block : MonoBehaviour
         textingObj = transform.GetChild(0).gameObject;
         textCount = textingObj.GetComponent<TMP_Text>();
         textCount.text = count.ToString();
-        UnenableInteract();
     }
 
     public void UnenableInteract()

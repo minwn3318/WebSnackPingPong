@@ -8,14 +8,30 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] private GameObject firstBlockGroup;
     [SerializeField] private GameObject secondBlockGroup;
-    [SerializeField] private int score = 0;
-    [SerializeField] private int stage = 1;
+    [SerializeField] private Player playerScript;
+    [SerializeField] private bool playing;
+    [SerializeField] private int score;
+    [SerializeField] private int stage;
 
     void Awake()
     {
-        Re();
         firstBlockGroup = transform.GetChild(0).gameObject;
         secondBlockGroup = transform.GetChild(1).gameObject;
+        playerScript = FindAnyObjectByType<Player>();
+        playing = false;
+    }
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            Debug.Log("GameStart");
+            playerScript.SpawnPlayer();
+        }
+        else if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Debug.Log("GameOver");
+            playerScript.DestoryPlayer();
+        }
     }
 
     public int Stage
@@ -28,10 +44,11 @@ public class GameManager : MonoBehaviour
         stage++;
     }
 
-    public void Re() 
+    public void ReStart() 
     {
         score = 0;
         stage = 1;
+        playing = true;
     }
 
 }

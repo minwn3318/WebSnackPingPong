@@ -5,7 +5,7 @@ using UnityEngine.InputSystem;
 public class Player : MonoBehaviour
 {
     [SerializeField] private bool turningAllow = false;
-    [SerializeField] private bool clickAllow = true;
+    [SerializeField] private bool clickAllow = false;
     [SerializeField] private int ballCount = 5;
     [SerializeField] private float gap = 0.05f;
     [SerializeField] private Vector2 playerPos = new Vector2(0, 1);
@@ -18,11 +18,25 @@ public class Player : MonoBehaviour
     public void Awake()
     {
         polling = GetComponent<ShooterQueue>();
-        polling.InitQueue(ballCount);
         directer = transform.GetChild(0).gameObject;
         player = transform.gameObject;
         directer.SetActive(false);
     }
+
+    public void SpawnPlayer()
+    {
+        player.SetActive(true);
+        clickAllow = true;
+        polling.InitQueue(ballCount);
+    }
+
+    public void DestoryPlayer()
+    {
+        polling.RemoveQueue();
+        clickAllow = false;
+        player.SetActive(false);
+    }
+
     public void OnLoadShoot(InputAction.CallbackContext context)
     {
         if (!clickAllow) return;

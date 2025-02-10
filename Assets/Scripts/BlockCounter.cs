@@ -29,20 +29,6 @@ public class BlockCounter : MonoBehaviour
         countList = new List<int>() { 8, 16, 24, 32, 40};
     }
 
-    /*private void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.S))
-        {
-            Debug.Log("S : " + gameManager.Stage);
-            SelectProb();
-        }
-        if(Input.GetKeyDown(KeyCode.C))
-        {
-            Debug.Log("C : " + +gameManager.Stage);
-            ChooseProbAndCount();
-        }
-    }*/
-
     public void Test()
     {
         Debug.Log(gameManager);

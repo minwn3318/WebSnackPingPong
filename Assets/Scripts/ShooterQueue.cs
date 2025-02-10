@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Drawing;
 using UnityEngine;
 
 public class ShooterQueue : MonoBehaviour
@@ -34,6 +35,24 @@ public class ShooterQueue : MonoBehaviour
         {
             PollingQueue(obj_v);
         }
+    }
+
+    public void RemoveQueue()
+    {
+        if(shooter != null)
+        {
+            for (int i = 0; i < size; i++)
+            {
+                GameObject obj_v = shooter.Dequeue();
+                Destroy(obj_v);
+            }
+        }
+        capacity = 0;
+        size = 0;
+        shooter = null;
+        Debug.Log(capacity);
+        Debug.Log(size);
+        Debug.Log(shooter);
     }
 
     public void PollingQueue(GameObject obj_v)

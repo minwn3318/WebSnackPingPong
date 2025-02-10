@@ -16,22 +16,22 @@ public class BlockGroup : MonoBehaviour
             GameObject obj_v = transform.GetChild(i).gameObject;
             blocks.Add(obj_v);
         }
-        if(this.CompareTag("FirstStap"))
+        /*if(this.CompareTag("FirstStap"))
         {
             SettingBlockCount(firstSize);
             couter.Test();
             couter.SelectProb();
             couter.ChooseProbAndCount();
-        }
+        }*/
     }
 
     public void SettingBlockCount(int start)
     {
-        Debug.Log("now setting");
+        couter.SelectProb();
         for (int i = start; i < arrySize; i++)
         {
             Block obj_v = blocks[i].GetComponent<Block>();
-            obj_v.EnableInteract(8);
+            obj_v.EnableInteract(couter.ChooseProbAndCount());
         }
     }
 }
