@@ -3,16 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class BlockCounter : MonoBehaviour
+public class BlockCounter : MonoBehaviour // 블럭의 카운트를 정할 클래스다 아직 완성되지 않아 사용하고 있지 않다
 {
-    [SerializeField] private int stageGap;
+    [SerializeField] private int stageGap; //스테이지
     [SerializeField] private int stageRest;
     [SerializeField] private int lastRemain;
     [SerializeField] private int forNum;
     [SerializeField] private int countIndex;
     [SerializeField] private int probIndex;
-    [SerializeField] private List<float> probList;
-    [SerializeField] private List<int> countList;
+    [SerializeField] private List<float> probList; // 확률표로 블록 그룹에서 몇 퍼센트의 블록이 해당 카운트를 가질지 정한다
+    [SerializeField] private List<int> countList; // 카운트 목록이다 
     [SerializeField] private GameManager gameManager;
 
     private void Awake()
@@ -29,7 +29,7 @@ public class BlockCounter : MonoBehaviour
         countList = new List<int>() { 8, 16, 24, 32, 40};
     }
 
-    public void Test()
+    public void Test() // 테스트 용으로 카운트의 초기값을 확인하고 확률 리스트가 정상적으로 되었는지 확인하다
     {
         Debug.Log(gameManager);
         Debug.Log(stageGap);
@@ -55,8 +55,12 @@ public class BlockCounter : MonoBehaviour
         //Debug.Log(gameManager.Stage);
         //stageRest = gameManager.Stage % stageGap;
         Debug.Log("I am SelectProb");
+
+
         /*
         //Debug.Log("stageRest : "+stageRest);
+
+
         switch (stageRest)
         {
             case 0:
@@ -70,6 +74,8 @@ public class BlockCounter : MonoBehaviour
         }
         //Debug.Log("forNum : "+forNum);
         //Debug.Log("probIndex : " + probIndex);
+
+
         if (gameManager.Stage < 10 && lastRemain == 0)
         {
             countIndex++;
@@ -77,8 +83,11 @@ public class BlockCounter : MonoBehaviour
 
         }
         lastRemain = stageRest;
+
         //Debug.Log("lastRemain : " + lastRemain);
         //Debug.Log("countIndex : " + countIndex);
+
+
         if (gameManager.Stage == 10)
         {
             countList.Clear();
@@ -95,8 +104,9 @@ public class BlockCounter : MonoBehaviour
     {
         Debug.Log(gameManager);
         Debug.Log("ChooseProbAndCount");
-        /*int lastCountIndex = countIndex;
 
+
+        /*int lastCountIndex = countIndex;
         for(int i = probIndex; i < forNum; i++)
         {
             Debug.Log(probList[i]);
@@ -105,6 +115,8 @@ public class BlockCounter : MonoBehaviour
             countIndex++;
         }
         countIndex = lastCountIndex;*/
+
+
         /*
         float total = 0;
         int lastCountIndex = countIndex;
