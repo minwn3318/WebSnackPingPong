@@ -29,7 +29,7 @@ public class Player : MonoBehaviour
     public void SpawnPlayer() // 게임시작 후 플레이어를 보이게하기
     {
         playerRender.enabled = true;
-        directer.SetActive(true);
+        //directer.SetActive(true);
         clickAllow = true;
         polling.InitQueue(ballCount);
     }
@@ -63,7 +63,7 @@ public class Player : MonoBehaviour
     {
         if (!turningAllow) return;
         pointerPos = context.ReadValue<Vector2>();
-        directPos = (pointerPos - (Vector2)playerTrans.position).normalized;
+        directPos = -(pointerPos - (Vector2)playerTrans.position).normalized;
         if (Vector2.Dot(playerPos, directPos) < 0)
         {
             return;
@@ -73,7 +73,7 @@ public class Player : MonoBehaviour
 
     public IEnumerator Shooting() // 공을 다 소진할 때까지 전부 발사한다
     {
-        while(polling.Capacity != 0)
+        for(int i = 0; i < polling.Capacity; i++)
         {
             GameObject obj_v = polling.PopQueue();
             obj_v.transform.position = playerTrans.position;

@@ -88,7 +88,7 @@ public class Ball : MonoBehaviour // 공 오브젝트이다
         {
             yield return null;
             restTime = Time.time - shootingTime;
-            Debug.Log(restTime);
+            //Debug.Log(restTime);
         }
         myPlayer.Return(this.gameObject);
     }
