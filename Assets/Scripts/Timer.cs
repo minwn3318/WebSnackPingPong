@@ -1,15 +1,38 @@
-using System.Collections;
+ï»¿using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
-public class Timer : MonoBehaviour // ½Ã°£Á¦ÇÑ Å¬·¡½ºÀÌ´Ù
+public class Timer : MonoBehaviour // ì‹œê°„ì œí•œ í´ë˜ìŠ¤ì´ë‹¤
 {
-    [SerializeField] private float elapsedTime; // ÇöÀç½Ã°£À» ÀúÀåÇÑ ½Ã°£ÀÌ´Ù
-    [SerializeField] private float LimitteTime; // Á¦ÇÑ½Ã°£ÀÌ´Ù
+    Image timerbar;
+    public float maxTime = 10f;
+    float timeLeft;
+    public GameObject GameOverText;
 
-    private void Awake()
+    private void Start()
     {
-        elapsedTime = 0f;
-        LimitteTime = 300f;
+        GameOverText.SetActive(false);
+        timerbar = GetComponent<Image>();
+        timeLeft = maxTime;
+    }
+
+    private void Update()
+    {
+        if (!GameManager.Instance.TimerStarted) return;
+
+        if (timeLeft > 0)
+        {
+            timeLeft -= Time.deltaTime;
+            timerbar.fillAmount = timeLeft / maxTime;
+        } else
+        {
+            if (!GameManager.Instance.IsGameOver()) // ì´ë¯¸ ê²Œì„ì˜¤ë²„ ìƒíƒœê°€ ì•„ë‹ ë•Œë§Œ
+            {
+                GameManager.Instance.GameOver(); // GameManagerì—ê²Œ ê²Œì„ì˜¤ë²„ ìš”ì²­
+                Time.timeScale = 0;
+            }
+        }
     }
 }
