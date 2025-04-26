@@ -68,6 +68,13 @@ public class Ball : MonoBehaviour // 공 오브젝트이다
             Mathf.Max(speed, 0f) * 
             Vector2.Reflect(lastVelocity.normalized, collision.contacts[0].normal);
         lastVelocity = ballRB.velocity;
+
+        if (collision.collider.CompareTag("Diamond")) // 다이아몬드에 부딪히면 점수 추가
+        {
+            GameManager.Instance.AddScore(100); // 점수 100점 추가
+            Destroy(collision.gameObject); // 다이아몬드 제거
+            return;
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision) // 공이 플레이어와 충돌했을 때 반드시 돌아온다
@@ -88,8 +95,10 @@ public class Ball : MonoBehaviour // 공 오브젝트이다
         {
             yield return null;
             restTime = Time.time - shootingTime;
-            Debug.Log(restTime);
+            //Debug.Log(restTime);
         }
         myPlayer.Return(this.gameObject);
     }
+
+
 }
