@@ -41,7 +41,7 @@ public class SceneLoad : MonoBehaviour
     {
         yield return null;
 
-        AsyncOperation operation = SceneManager.LoadSceneAsync("MainTitle");
+        AsyncOperation operation = SceneManager.LoadSceneAsync("UserInfoScene");
         operation.allowSceneActivation = false;
 
         while (!operation.isDone)

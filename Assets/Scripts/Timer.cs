@@ -1,10 +1,9 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using Unity.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Timer : MonoBehaviour // 시간제한 클래스이다
+public class Timer : MonoBehaviour
 {
     Image timerbar;
     public float maxTime = 10f;
@@ -20,17 +19,19 @@ public class Timer : MonoBehaviour // 시간제한 클래스이다
 
     private void Update()
     {
+        // 게임 시작 후 시간이 흐르기 시작했을 때만 타이머 작동
         if (!GameManager.Instance.TimerStarted) return;
 
         if (timeLeft > 0)
         {
             timeLeft -= Time.deltaTime;
             timerbar.fillAmount = timeLeft / maxTime;
-        } else
+        }
+        else
         {
-            if (!GameManager.Instance.IsGameOver()) // 이미 게임오버 상태가 아닐 때만
+            if (!GameManager.Instance.IsGameOver())
             {
-                GameManager.Instance.GameOver(); // GameManager에게 게임오버 요청
+                GameManager.Instance.GameOver();
                 Time.timeScale = 0;
             }
         }

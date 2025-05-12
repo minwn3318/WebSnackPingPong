@@ -24,12 +24,12 @@ public class Ball : MonoBehaviour // 공 오브젝트이다
         if (ballRB.velocity.magnitude < speedLose) // 속력이 최소 속력보다 낮아지면 기본 속력으로 맞춘다 속력이 낮아지면 재미가 심하게 반감된다
         {
             float gapManitude = speed - ballRB.velocity.magnitude;
-            Vector2 modifyVector = 
-                -((lastVelocity.normalized * gapManitude * (speed / speedLose)) 
+            Vector2 modifyVector =
+                -((lastVelocity.normalized * gapManitude * (speed / speedLose))
                 + ballRB.velocity);
             ballRB.velocity = modifyVector;
         }
-        if(ballRB.velocity == -lastVelocity) //만약 현재 속도가 마지막 속도의 (-)버전과 같다면, xy역방향을 취해준다 공이 같은 자리를 맴도는걸 막아준다
+        if (ballRB.velocity == -lastVelocity) //만약 현재 속도가 마지막 속도의 (-)버전과 같다면, xy역방향을 취해준다 공이 같은 자리를 맴도는걸 막아준다
         {
             ballRB.velocity = new Vector2(ballRB.velocity.y, ballRB.velocity.x);
         }
@@ -37,11 +37,11 @@ public class Ball : MonoBehaviour // 공 오브젝트이다
 
     public float Speed //속력값을 정하거나 정해진 속력을 가져온다
     {
-        get 
+        get
         {
             return speed;
         }
-        set 
+        set
         {
             speed = value;
         }
@@ -55,24 +55,27 @@ public class Ball : MonoBehaviour // 공 오브젝트이다
 
     private void OnCollisionEnter2D(Collision2D collision) //공이 물체와 부딪혔을 때 반응하는 함수다
     {
-        if(collision.collider.CompareTag("Wall")) // 공이 아랫 바닥과 부딪히면 반드시 다시 플레이어에게 돌아온다
+        if (collision.collider.CompareTag("Wall")) // 공이 아랫 바닥과 부딪히면 반드시 다시 플레이어에게 돌아온다
         {
             lastVelocity = Vector2.zero;
             ballRB.velocity = lastVelocity;
             comeBackHome = false;
             myPlayer.Return(this.gameObject);
-            return;
+            //return;
         }
+        
         //아래에는 공이 반사되는 것을 구현한 코드다. 항상 바뀌기전 속도를 저장해둔다
-        ballRB.velocity = 
-            Mathf.Max(speed, 0f) * 
+        ballRB.velocity =
+            Mathf.Max(speed, 0f) *
             Vector2.Reflect(lastVelocity.normalized, collision.contacts[0].normal);
         lastVelocity = ballRB.velocity;
 
         if (collision.collider.CompareTag("Diamond")) // 다이아몬드에 부딪히면 점수 추가
         {
             GameManager.Instance.AddScore(100); // 점수 100점 추가
-            Destroy(collision.gameObject); // 다이아몬드 제거
+            GameObject diamond = collision.gameObject;
+            GameManager.Instance.OnDiamondHit(); // 먼저 처리
+            Destroy(diamond); // 나중에 파괴
             return;
         }
     }
@@ -91,13 +94,21 @@ public class Ball : MonoBehaviour // 공 오브젝트이다
     {
         float shootingTime = Time.time;
         float restTime = 0;
-        while(restTime < forceReturnTime)
+        while (restTime < forceReturnTime)
         {
             yield return null;
             restTime = Time.time - shootingTime;
             //Debug.Log(restTime);
         }
         myPlayer.Return(this.gameObject);
+    }
+    public void Stop()
+    {
+        StopAllCoroutines();
+        if (TryGetComponent<Rigidbody2D>(out var rb))
+        {
+            rb.velocity = Vector2.zero;
+        }
     }
 
 

@@ -1,59 +1,48 @@
 using System.Collections;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
-public class GameManager : MonoBehaviour // 게임 스테이지를 총괄하는 매니저 클래스
+public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance;
+    public float lastDiamondXPos;
+
     [Header("게임 시스템")]
-    [SerializeField] private Player playerScript; // 플레이어 스크립트
-    [SerializeField] private int score; // 총 점수
-    [SerializeField] private int stage; // 현재 스테이지
+    [SerializeField] private Player playerScript;
+    [SerializeField] private TMP_Text countdownTMP;
+    [SerializeField] private GameObject gameElementsToEnable;
+    [SerializeField] private TMP_Text scoreTMP;
+    [SerializeField] private GameObject resultPanel;
+    [SerializeField] private TMP_Text gameOverTMP;
+    [SerializeField] private TMP_Text finalScoreTMP;
 
-    public static GameManager Instance; // 싱글톤 패턴
-
-    [Header("카운트다운 UI")]
-    [SerializeField] private TMP_Text countdownTMP; // TextMeshPro 텍스트
-    [SerializeField] private GameObject gameElementsToEnable; // 게임 시작 시 활성화할 오브젝트 묶음
-    [SerializeField] private TMP_Text scoreTMP; // ScoreText 연결
-    [SerializeField] private GameObject resultPanel; // 결과창 Panel
-    [SerializeField] private TMP_Text gameOverTMP; // 게임 오버 문구용 텍스트
-    [SerializeField] private TMP_Text finalScoreTMP; // 결과창 최종 점수 Text
-
+    private int score = 0;
     private bool gameStarted = false;
     private bool gameOver = false;
+    private int ballCount = 0;
+    private int ballReturnCount = 0;
+    private bool diamondHit = false; // 다이아몬드를 맞았는가?
+
     public bool TimerStarted { get; private set; } = false;
 
-    public void AddScore(int amount)
-    {
-        score += amount;
-        UpdateScoreUI();
-        Debug.Log($"현재 점수: {score}");
-    }
-
-    private void UpdateScoreUI()
-    {
-        if (scoreTMP != null)
-            scoreTMP.text = "Score: " + score.ToString();
-    }
-
-    void Awake()
+    private void Awake()
     {
         if (Instance == null)
             Instance = this;
         else
             Destroy(gameObject);
 
-        playerScript = FindAnyObjectByType<Player>();
+        playerScript = FindObjectOfType<Player>();
     }
 
-    void Start()
+    private void Start()
     {
         StartCoroutine(CountdownRoutine());
     }
 
-    IEnumerator CountdownRoutine()
+    private IEnumerator CountdownRoutine()
     {
-        // 게임 시작 전 UI/오브젝트 숨기기
         gameElementsToEnable.SetActive(false);
         countdownTMP.gameObject.SetActive(true);
 
@@ -78,53 +67,139 @@ public class GameManager : MonoBehaviour // 게임 스테이지를 총괄하는 매니저 클래
     {
         if (gameStarted) return;
 
-        Debug.Log("GameStart");
-        StartSetting();
-        playerScript.SpawnPlayer(); // 카운트다운 후 자동 등장
+        score = 0;
+        UpdateScoreUI();
         gameStarted = true;
+        gameOver = false;
         TimerStarted = true;
+
+        playerScript.SpawnPlayer();
+        StageManager.Instance.GenerateStage(true);
     }
 
-    void Update()
+    private void Update()
     {
-        // ESC 누르면 게임 리셋 테스트용
+        if (!gameStarted || gameOver) return;
+
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            Debug.Log("GameOver");
-            playerScript.DestoryPlayer();
-            gameStarted = false;
-            StartCoroutine(CountdownRoutine()); // 다시 카운트다운 시작
+            GameOver();
         }
     }
 
-    public int Stage => stage;
-    public int Score => score;
-
-    public void plusStage() // 스테이지 상승
+    public void AddScore(int amount)
     {
-        stage++;
-    }
-
-    public void StartSetting() // 점수, 스테이지 초기화
-    {
-        score = 0;
-        stage = 1;
+        score += amount;
         UpdateScoreUI();
     }
 
-    // GameManager.cs 안에 추가
-    public bool IsGameOver()
+    private void UpdateScoreUI()
     {
-        return gameOver;
+        if (scoreTMP != null)
+            scoreTMP.text = "Score: " + score;
     }
+
+    public void SetBallCount(int count)
+    {
+        ballCount = count;
+        ballReturnCount = 0;
+    }
+
+    public void OnBallReturned()
+    {
+        ballReturnCount++;
+
+        if (ballReturnCount >= ballCount && !StageManager.Instance.isStageMoving)
+        {
+            if (diamondHit)
+            {
+                // 모든 공이 회수됐고, 다이아몬드도 먹었으면 스테이지 변경 시작
+                diamondHit = false; // 초기화
+                StartCoroutine(WaitAndHandleStageChange());
+            }
+            else
+            {
+                playerScript.EnableInput(); // 다이아몬드 안먹은 경우엔 입력 가능
+            }
+        }
+    }
+
+
+    public void OnDiamondHit()
+    {
+        playerScript.DisableInput();
+        diamondHit = true;
+    }
+    
+    //private IEnumerator WaitForBallsThenStageChange()
+    //{
+    //    // 공 회수 대기
+    //    while (ballReturnCount < ballCount)
+    //    {
+    //        yield return null;
+    //    }
+
+    //    yield return StartCoroutine(HandleStageChange());
+    //}
+
+    private IEnumerator WaitAndHandleStageChange()
+    {
+        // 공이 전부 화면에서 사라질 때까지 대기
+        while (true)
+        {
+            Ball[] balls = GameObject.FindObjectsOfType<Ball>(true); // true: 비활성 포함
+
+            bool anyVisible = false;
+            foreach (Ball ball in balls)
+            {
+                if (ball.gameObject.activeSelf) // 아직 활성화된 공이 있다면 대기
+                {
+                    anyVisible = true;
+                    break;
+                }
+            }
+
+            if (!anyVisible)
+                break;
+
+            yield return null; // 다음 프레임까지 대기
+        }
+
+        yield return new WaitForSeconds(0.1f); // 안정화 유예
+
+        GameObject newStage = StageManager.Instance.GenerateStage();
+        yield return StartCoroutine(StageManager.Instance.MoveStageUp(newStage));
+
+        playerScript.MoveToNewStage();
+        playerScript.EnableInput();
+    }
+
+
+
+    private IEnumerator HandleStageChange()
+    {
+        // 기존 스테이지 제거
+        //StageManager.Instance.ClearCurrentStage();
+        //yield return new WaitForSeconds(0.2f);
+
+        // 새 스테이지 생성 (아래쪽 y = -22 부근에서 시작)
+        GameObject newStage = StageManager.Instance.GenerateStage();
+
+        // 위로 이동 (y=0까지 올라옴)
+        yield return StartCoroutine(StageManager.Instance.MoveStageUp(newStage));
+
+        // 플레이어는 y=10
+        playerScript.EnableInput();
+    }
+
+
 
     public void GameOver()
     {
-        if (gameOver) return; // 이미 게임오버 상태면 무시
+        if (gameOver) return;
 
-        Debug.Log("Game Over by Timer");
         gameOver = true;
-
+        TimerStarted = false;
         playerScript.DestoryPlayer();
         gameElementsToEnable.SetActive(false);
 
@@ -134,11 +209,37 @@ public class GameManager : MonoBehaviour // 게임 스테이지를 총괄하는 매니저 클래
             gameOverTMP.text = "Game Over!";
         }
 
-
         resultPanel.SetActive(true);
-        finalScoreTMP.text = "Score: " + score.ToString();
+        finalScoreTMP.text = "Score: " + score;
 
-        Time.timeScale = 0; // 게임 정지
+        StartCoroutine(LoadUserInfoScene());
     }
 
+    private IEnumerator ForceGameOver()
+    {
+        Debug.Log("게임 시간이 종료되어 강제 GameOver 실행");
+
+        // 모든 Ball 멈추기
+        Ball[] balls = FindObjectsOfType<Ball>();
+        foreach (Ball ball in balls)
+        {
+            ball.Stop();
+        }
+
+        yield return new WaitForSecondsRealtime(1f);
+        GameOver();
+    }
+
+    private IEnumerator LoadUserInfoScene()
+    {
+        Debug.Log("LoadUserInfoScene 실행됨");
+        yield return new WaitForSecondsRealtime(3f);
+        Debug.Log("씬 전환 시도");
+        SceneManager.LoadScene("UserInfoScene");
+    }
+
+    public bool IsGameOver()
+    {
+        return gameOver;
+    }
 }
