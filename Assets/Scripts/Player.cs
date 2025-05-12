@@ -4,53 +4,64 @@ using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] private bool turningAllow = false; // 회전을 허용여부
+    public static Player Instance;
+
+    [SerializeField] private bool turningAllow = false; // 회전을 허용 여부
     [SerializeField] private bool clickAllow = false; // 클릭 허용 여부
     [SerializeField] private int ballCount = 5; // 소유할 공 갯수
     [SerializeField] private float gap = 0.05f; // 공 발사 타임 간격
-    [SerializeField] private SpriteRenderer playerRender; // 플레이어 보이게하는 변수
-    [SerializeField] private Vector2 playerPos = new Vector2(0, 1); // 플레이어가 기본으로 바라보고 있는 방향 벡터
+    [SerializeField] private SpriteRenderer playerRender; // 플레이어 스프라이트
+    [SerializeField] private Vector2 playerPos = new Vector2(0, 1); // 기본 발사 방향
     [SerializeField] private GameObject directer; // 화살표 오브젝트
     [SerializeField] private Transform playerTrans; // 플레이어 트랜스폼
-    [SerializeField] private Vector2 pointerPos; // 클릭포인터 방향 벡터
-    [SerializeField] private Vector2 directPos; // 화살표 벡터
-    [SerializeField] private ShooterQueue polling; // 공을 저장할 풀 (큐)
+    [SerializeField] private Vector2 pointerPos; // 마우스 포인터 위치
+    [SerializeField] private Vector2 directPos; // 실제 발사 방향
+    [SerializeField] private ShooterQueue polling; // 공 풀 관리
 
-    public void Awake()
+    private bool isShooting = false;
+
+    private void Awake()
     {
+        if (Instance == null)
+            Instance = this;
+        else
+            Destroy(gameObject);
+
         polling = GetComponent<ShooterQueue>();
         directer = transform.GetChild(0).gameObject;
         playerTrans = GetComponent<Transform>();
         playerRender = GetComponent<SpriteRenderer>();
         directer.SetActive(false);
-        //playerRender.enabled = false;
     }
 
-    public void SpawnPlayer() // 게임시작 후 플레이어를 보이게하기
+    public void SpawnPlayer()
     {
         playerRender.enabled = true;
-        //directer.SetActive(true);
         clickAllow = true;
+        isShooting = false;
         polling.InitQueue(ballCount);
+        GameManager.Instance.SetBallCount(ballCount);
     }
 
-    public void DestoryPlayer() // 게임오버후 플레이어를 보이지 않게 하기
+    public void DestoryPlayer()
     {
         polling.RemoveQueue();
         clickAllow = false;
+        isShooting = false;
         directer.SetActive(false);
         playerRender.enabled = false;
     }
 
-    public void OnLoadShoot(InputAction.CallbackContext context) // 클릭 후 공을 발사한다 공이 다시 되돌아오기 전에는 클릭이 허용되지 않는다
+    public void OnLoadShoot(InputAction.CallbackContext context)
     {
-        if (!clickAllow) return;
-        if (context.performed) // 눌러져있을 때 회전을 허락한다
+        if (!clickAllow || isShooting) return;
+
+        if (context.performed)
         {
             directer.SetActive(true);
             turningAllow = true;
         }
-        else if (context.canceled && turningAllow) // 눌림이 취소되고 회전이 허락되어있으면 공을 발사한다
+        else if (context.canceled && turningAllow)
         {
             StartCoroutine(Shooting());
             directer.SetActive(false);
@@ -59,34 +70,62 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void OnRotate(InputAction.CallbackContext context) // 플레이어가 회전한다
+    public void OnRotate(InputAction.CallbackContext context)
     {
         if (!turningAllow) return;
+
         pointerPos = context.ReadValue<Vector2>();
         directPos = -(pointerPos - (Vector2)playerTrans.position).normalized;
+
         if (Vector2.Dot(playerPos, directPos) < 0)
-        {
             return;
-        }
+
         playerTrans.up = directPos;
     }
 
-    public IEnumerator Shooting() // 공을 다 소진할 때까지 전부 발사한다
+    public IEnumerator Shooting()
     {
-        for(int i = 0; i < polling.Capacity; i++)
+        isShooting = true;
+
+        for (int i = 0; i < polling.Capacity; i++)
         {
             GameObject obj_v = polling.PopQueue();
+            if (obj_v == null) continue;
+
             obj_v.transform.position = playerTrans.position;
             Ball ball_v = obj_v.GetComponent<Ball>();
             ball_v.Move(directPos);
             yield return new WaitForSeconds(gap);
         }
+
+        isShooting = false;
     }
 
-    public void Return(GameObject obj_v) // 공을 다시 반환하며 공을 전부 반환했으면 클릭이 가능해진다
+    public void Return(GameObject obj_v)
     {
         obj_v.transform.position = playerTrans.position;
         polling.PollingQueue(obj_v);
-        if(polling.Capacity == polling.Size) clickAllow = true;
+        GameManager.Instance.OnBallReturned();
+
+        if (polling.Capacity == polling.Size)
+        {
+            clickAllow = true;
+        }
+    }
+
+    public void MoveToNewStage()
+    {
+        Vector3 newPosition = new Vector3(GameManager.Instance.lastDiamondXPos, transform.position.y, transform.position.z);
+        transform.position = newPosition;
+    }
+
+    public void DisableInput()
+    {
+        clickAllow = false;
+    }
+
+    public void EnableInput()
+    {
+        clickAllow = true;
     }
 }
