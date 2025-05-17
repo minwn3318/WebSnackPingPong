@@ -4,7 +4,41 @@ using System.Text;
 using System.Collections;
 using System;
 using UnityEditor.PackageManager.Requests;
-using UnityEngine.InputSystem;
+using TMPro;
+using System.Collections.Generic;
+
+[Serializable]
+public class PlayerStageDTO
+{
+    public int stage;
+}
+
+[Serializable]
+public class PlayerScoreDTO
+{
+    public int score;
+}
+
+[Serializable]
+public class PlayerTotalDTO
+{
+    public int stage;
+    public int score;
+}
+
+[Serializable]
+public class TopPlayerRecordsDTO
+{
+    public string game_id;
+    public int stage;
+    public int score;
+}
+
+[Serializable]
+public class TopPlayerRecordsDTOList
+{
+    public TopPlayerRecordsDTO[] list;
+}
 
 public class GetRankingAPIFront : MonoBehaviour
 {
@@ -12,30 +46,52 @@ public class GetRankingAPIFront : MonoBehaviour
     private string maxStage = "/max-stage";
     private string maxScore = "/max-score";
     private string maxTotal = "/max-total";
+    private string topUsers = "/top-users";
+
+    [Header("UserId")]
     [SerializeField]
     private string gameID = "gamer01";
+    public TMP_Text userID;
 
+    [Header("Stage")]
+    [SerializeField]
+    private TMP_Text TMPstage;
 
-    // Start is called before the first frame update
-    void Start()
+    [Header("Score")]
+    [SerializeField]
+    private TMP_Text TMPscore;
+
+    [Header("maxStage")]
+    [SerializeField]
+    private TMP_Text TMPmaxStage;
+
+    [Header("maxScore")]
+    [SerializeField]
+    private TMP_Text TMPmaxScoreTX;
+
+    [Header("Rank 1")]
+    [SerializeField]
+    private TMP_Text TMPone;
+
+    [Header("Rank 2")]
+    [SerializeField]
+    private TMP_Text TMPsecond;
+
+    [Header("Rank 3")]
+    [SerializeField]
+    private TMP_Text TMPthird;
+
+    private void Awake()
     {
         SetGameID("gamer01");
+        userID.text = gameID;
     }
-
-    private void Update()
+    void Start()
     {
-        if(Input.GetKeyUp(KeyCode.A))
-        {
-            StartCoroutine(GetMaxStage(maxStage));
-        }
-        if (Input.GetKeyUp(KeyCode.S))
-        {
-            StartCoroutine(GetMaxScore(maxScore));
-        }
-        if (Input.GetKeyUp(KeyCode.D))
-        {
-            StartCoroutine(GetMaxTotal(maxTotal));
-        }
+        StartCoroutine(GetMaxStage(maxStage));
+        StartCoroutine(GetMaxScore(maxScore));
+        StartCoroutine(GetMaxTotal(maxTotal));
+        StartCoroutine(GetTopUsers(topUsers));
     }
 
     public void SetGameID(string id)
@@ -51,7 +107,6 @@ public class GetRankingAPIFront : MonoBehaviour
     IEnumerator GetMaxStage(string stageURL)
     {
         string url = $"{mainURL}{stageURL}?userId={UnityWebRequest.EscapeURL(GetGameID())}";
-        Debug.Log(url);
         using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
             request.SetRequestHeader("Content-Type", "application/json");
@@ -60,16 +115,14 @@ public class GetRankingAPIFront : MonoBehaviour
             if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
             {
                 Debug.LogError($"GET Error: {request.error}");
-                StartCoroutine(GetMaxStage(url));
             }
             else 
             {
                 string jsonResponse = request.downloadHandler.text;
-                if(jsonResponse == null)
-                {
-                    Debug.Log("null");
-                }
-                Debug.Log($"GET Stage Success: {jsonResponse}");
+                PlayerStageDTO resp = JsonUtility.FromJson<PlayerStageDTO>(jsonResponse);
+                Debug.Log(resp.stage);
+                TMPstage.text = resp.stage.ToString();
+
             }
         }
     }
@@ -84,12 +137,13 @@ public class GetRankingAPIFront : MonoBehaviour
             if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
             {
                 Debug.LogError($"GET Error: {request.error}");
-                StartCoroutine(GetMaxScore(url));
             }
             else
             {
                 string jsonResponse = request.downloadHandler.text;
-                Debug.Log($"GET Score Success: {jsonResponse}");
+                PlayerScoreDTO resp = JsonUtility.FromJson<PlayerScoreDTO>(jsonResponse);
+                Debug.Log(resp.score);
+                TMPscore.text = resp.score.ToString();
             }
         }
     }
@@ -104,12 +158,41 @@ public class GetRankingAPIFront : MonoBehaviour
             if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
             {
                 Debug.LogError($"GET Error: {request.error}");
-                StartCoroutine(GetMaxTotal(url));
             }
             else
             {
                 string jsonResponse = request.downloadHandler.text;
-                Debug.Log($"GET Total Success: {jsonResponse}");
+                PlayerTotalDTO resp = JsonUtility.FromJson<PlayerTotalDTO>(jsonResponse);
+                TMPmaxStage.text = resp.stage.ToString();
+                TMPmaxScoreTX.text = resp.score.ToString();
+            }
+        }
+    }
+
+    IEnumerator GetTopUsers(string topURL)
+    {
+        string url = $"{mainURL}{topURL}";
+        using (UnityWebRequest request = UnityWebRequest.Get(url))
+        {
+            request.SetRequestHeader("Content-Type", "application/json");
+
+            yield return request.SendWebRequest();
+            if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
+            {
+                Debug.LogError($"GET Error: {request.error}");
+            }
+            else
+            {
+                string jsonResponse = request.downloadHandler.text;
+                string wrappedJson = "{\"list\":" + jsonResponse + "}";
+                TopPlayerRecordsDTOList resp = JsonUtility.FromJson<TopPlayerRecordsDTOList>(wrappedJson);
+                TopPlayerRecordsDTO[] ranking = resp.list;
+
+                List<TopPlayerRecordsDTO> scoreList = new List<TopPlayerRecordsDTO>(ranking);
+                TMPone.text = "Rank 1 : " + scoreList[0].game_id.ToString() + " : " + scoreList[0].stage.ToString() + " : " + scoreList[0].score.ToString();
+                TMPsecond.text = "Rank 2 : " + scoreList[1].game_id.ToString() + " : " + scoreList[1].stage.ToString() + " : " + scoreList[1].score.ToString();
+                TMPthird.text = "Rank 3 : " + scoreList[2].game_id.ToString() + " : " + scoreList[2].stage.ToString() + " : " + scoreList[2].score.ToString();
+
             }
         }
     }
