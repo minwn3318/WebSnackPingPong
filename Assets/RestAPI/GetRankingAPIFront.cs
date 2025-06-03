@@ -1,11 +1,10 @@
 using UnityEngine;
 using UnityEngine.Networking;
-using System.Text;
 using System.Collections;
 using System;
-using UnityEditor.PackageManager.Requests;
 using TMPro;
 using System.Collections.Generic;
+using JetBrains.Annotations;
 
 [Serializable]
 public class PlayerStageDTO
@@ -110,6 +109,8 @@ public class GetRankingAPIFront : MonoBehaviour
         using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
             request.SetRequestHeader("Content-Type", "application/json");
+            string jsession = CookieSession.Instance.GetCookie();
+            request.SetRequestHeader("Cookie", $"JSESSIONID={jsession}");
 
             yield return request.SendWebRequest();
             if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
@@ -132,6 +133,8 @@ public class GetRankingAPIFront : MonoBehaviour
         using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
             request.SetRequestHeader("Content-Type", "application/json");
+            string jsession = CookieSession.Instance.GetCookie();
+            request.SetRequestHeader("Cookie", $"JSESSIONID={jsession}");
 
             yield return request.SendWebRequest();
             if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
@@ -153,6 +156,8 @@ public class GetRankingAPIFront : MonoBehaviour
         using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
             request.SetRequestHeader("Content-Type", "application/json");
+            string jsession = CookieSession.Instance.GetCookie();
+            request.SetRequestHeader("Cookie", $"JSESSIONID={jsession}");
 
             yield return request.SendWebRequest();
             if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
