@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
 
-public enum BTNType { New, Option, Back }
+//public enum BTNType { New, Option, Back }
 
 public class TitleBtn : MonoBehaviour
 {
