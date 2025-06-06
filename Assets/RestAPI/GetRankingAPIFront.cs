@@ -47,43 +47,9 @@ public class GetRankingAPIFront : MonoBehaviour
     private string maxTotal = "/max-total";
     private string topUsers = "/top-users";
 
-    [Header("UserId")]
-    [SerializeField]
-    private string gameID = "gamer01";
-    public TMP_Text userID;
-
-    [Header("Stage")]
-    [SerializeField]
-    private TMP_Text TMPstage;
-
-    [Header("Score")]
-    [SerializeField]
-    private TMP_Text TMPscore;
-
-    [Header("maxStage")]
-    [SerializeField]
-    private TMP_Text TMPmaxStage;
-
-    [Header("maxScore")]
-    [SerializeField]
-    private TMP_Text TMPmaxScoreTX;
-
-    [Header("Rank 1")]
-    [SerializeField]
-    private TMP_Text TMPone;
-
-    [Header("Rank 2")]
-    [SerializeField]
-    private TMP_Text TMPsecond;
-
-    [Header("Rank 3")]
-    [SerializeField]
-    private TMP_Text TMPthird;
-
     private void Awake()
     {
-        SetGameID("gamer01");
-        userID.text = gameID;
+        Debug.Log(PlayerPrefs.GetString("nickname"));
     }
     void Start()
     {
@@ -93,19 +59,9 @@ public class GetRankingAPIFront : MonoBehaviour
         StartCoroutine(GetTopUsers(topUsers));
     }
 
-    public void SetGameID(string id)
-    {
-        gameID = id;
-    }
-
-    public string GetGameID()
-    {
-        return gameID;
-    }
-
     IEnumerator GetMaxStage(string stageURL)
     {
-        string url = $"{mainURL}{stageURL}?userId={UnityWebRequest.EscapeURL(GetGameID())}";
+        string url = $"{mainURL}{stageURL}";
         using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
             request.SetRequestHeader("Content-Type", "application/json");
@@ -121,15 +77,13 @@ public class GetRankingAPIFront : MonoBehaviour
             {
                 string jsonResponse = request.downloadHandler.text;
                 PlayerStageDTO resp = JsonUtility.FromJson<PlayerStageDTO>(jsonResponse);
-                Debug.Log(resp.stage);
-                TMPstage.text = resp.stage.ToString();
-
+                Debug.Log("max stage : "+resp.stage);
             }
         }
     }
     IEnumerator GetMaxScore(string scoreURL)
     {
-        string url = $"{mainURL}{scoreURL}?userId={UnityWebRequest.EscapeURL(GetGameID())}";
+        string url = $"{mainURL}{scoreURL}";
         using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
             request.SetRequestHeader("Content-Type", "application/json");
@@ -145,14 +99,13 @@ public class GetRankingAPIFront : MonoBehaviour
             {
                 string jsonResponse = request.downloadHandler.text;
                 PlayerScoreDTO resp = JsonUtility.FromJson<PlayerScoreDTO>(jsonResponse);
-                Debug.Log(resp.score);
-                TMPscore.text = resp.score.ToString();
+                Debug.Log("max score : " + resp.score);
             }
         }
     }
     IEnumerator GetMaxTotal(string totalURL)
     {
-        string url = $"{mainURL}{totalURL}?userId={UnityWebRequest.EscapeURL(GetGameID())}";
+        string url = $"{mainURL}{totalURL}";
         using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
             request.SetRequestHeader("Content-Type", "application/json");
@@ -168,8 +121,8 @@ public class GetRankingAPIFront : MonoBehaviour
             {
                 string jsonResponse = request.downloadHandler.text;
                 PlayerTotalDTO resp = JsonUtility.FromJson<PlayerTotalDTO>(jsonResponse);
-                TMPmaxStage.text = resp.stage.ToString();
-                TMPmaxScoreTX.text = resp.score.ToString();
+                Debug.Log("max total score : " + resp.score);
+                Debug.Log("max total stage : " + resp.stage);
             }
         }
     }
@@ -194,9 +147,9 @@ public class GetRankingAPIFront : MonoBehaviour
                 TopPlayerRecordsDTO[] ranking = resp.list;
 
                 List<TopPlayerRecordsDTO> scoreList = new List<TopPlayerRecordsDTO>(ranking);
-                TMPone.text = "Rank 1 : " + scoreList[0].game_id.ToString() + " : " + scoreList[0].stage.ToString() + " : " + scoreList[0].score.ToString();
-                TMPsecond.text = "Rank 2 : " + scoreList[1].game_id.ToString() + " : " + scoreList[1].stage.ToString() + " : " + scoreList[1].score.ToString();
-                TMPthird.text = "Rank 3 : " + scoreList[2].game_id.ToString() + " : " + scoreList[2].stage.ToString() + " : " + scoreList[2].score.ToString();
+                Debug.Log("Rank 1 : ID - " + scoreList[0].game_id + " : Stage - " + scoreList[0].stage + " : Score - " + scoreList[0].score);
+                Debug.Log("Rank 2 : ID - " + scoreList[1].game_id + " : Stage - " + scoreList[1].stage + " : Score - " + scoreList[1].score);
+                Debug.Log("Rank 3 : ID - " + scoreList[2].game_id + " : Stage - " + scoreList[2].stage + " : Score - " + scoreList[2].score);
 
             }
         }

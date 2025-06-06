@@ -40,7 +40,7 @@ public class PostRecordAPIFront : MonoBehaviour
             request.uploadHandler = new UploadHandlerRaw(bodyRaw);
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
-            string jsession = CookieSession.Instance.GetCookie();
+            string jsession = PlayerPrefs.GetString("JSESSIONID");
             request.SetRequestHeader("Cookie", $"JSESSIONID={jsession}");
             // 인증 헤더가 필요하면 추가
             // request.SetRequestHeader("Authorization", "Bearer YOUR_TOKEN_HERE");
@@ -57,9 +57,7 @@ public class PostRecordAPIFront : MonoBehaviour
             else
             {
                 string responseText = request.downloadHandler.text;
-                Debug.Log($"POST Success: {responseText}");
-                // 응답 JSON 처리
-                // var result = JsonUtility.FromJson<YourResultType>(responseText);
+                Debug.Log($"POST Success: {responseText}");    
             }
         }
     }

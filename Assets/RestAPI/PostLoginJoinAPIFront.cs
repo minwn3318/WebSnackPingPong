@@ -13,7 +13,7 @@ public class UserIdDTO
 }
 public class PostLoginJoinAPIFront : MonoBehaviour
 {
-    private const string postURL = "http://localhost:8080/shooting-miner/userids";
+    private const string postURL = "http://113.198.229.158:1435/shooting-miner/userids";
     private string joinURL = "/join";
     private string loginURL = "/login";
     private string logoutURL = "/logout";
@@ -27,12 +27,6 @@ public class PostLoginJoinAPIFront : MonoBehaviour
     {
         StartCoroutine(UserLogin(gameUser));
     }
-
-    public void SendLogout()
-    {
-        StartCoroutine(UserLogout());
-    }
-
 
     IEnumerator UserJoin(string userid)
     {
@@ -52,8 +46,6 @@ public class PostLoginJoinAPIFront : MonoBehaviour
             request.uploadHandler = new UploadHandlerRaw(bodyRaw);
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
-            // 인증 헤더가 필요하면 추가
-            // request.SetRequestHeader("Authorization", "Bearer YOUR_TOKEN_HERE");
 
             // 요청 전송
             yield return request.SendWebRequest();
@@ -68,8 +60,6 @@ public class PostLoginJoinAPIFront : MonoBehaviour
             {
                 string responseText = request.downloadHandler.text;
                 Debug.Log($"POST Success: {responseText}");
-                // 응답 JSON 처리
-                // var result = JsonUtility.FromJson<YourResultType>(responseText);
             }
         }
     }
@@ -92,8 +82,6 @@ public class PostLoginJoinAPIFront : MonoBehaviour
             request.uploadHandler = new UploadHandlerRaw(bodyRaw);
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
-            // 인증 헤더가 필요하면 추가
-            // request.SetRequestHeader("Authorization", "Bearer YOUR_TOKEN_HERE");
 
             // 요청 전송
             yield return request.SendWebRequest();
@@ -108,15 +96,15 @@ public class PostLoginJoinAPIFront : MonoBehaviour
             {
                 string responseText = request.downloadHandler.text;
                 Debug.Log($"POST Success: {responseText}");
-                // 응답 JSON 처리
-                // var result = JsonUtility.FromJson<YourResultType>(responseText);
+
                 string setCookie = request.GetResponseHeader("Set-Cookie");
                 if (!string.IsNullOrEmpty(setCookie))
                 {
-                    string jsession = CookieSession.Instance.ParseAndSaveCookie(setCookie, "JSESSIONID");
+                    string jsession = ParseAndSaveCookie(setCookie, "JSESSIONID");
                     if (!string.IsNullOrEmpty(jsession))
                     {
                         PlayerPrefs.SetString("JSESSIONID", jsession);
+                        PlayerPrefs.SetString("nickname", userid);
                         PlayerPrefs.Save();
                         Debug.Log($"Saved JSESSIONID = {jsession}");
                     }
@@ -124,42 +112,18 @@ public class PostLoginJoinAPIFront : MonoBehaviour
             }
         }
     }
-    public IEnumerator UserLogout()
+
+    public string ParseAndSaveCookie(string setCookieHeader, string cookieName)
     {
-        string url = $"{postURL}{logoutURL}";
-
-        // 빈 바디의 POST 요청 생성
-        UnityWebRequest uwr = new UnityWebRequest(url, "POST");
-        uwr.uploadHandler = new UploadHandlerRaw(new byte[0]);
-        uwr.downloadHandler = new DownloadHandlerBuffer();
-        uwr.SetRequestHeader("Content-Type", "application/json");
-
-        // 저장된 JSESSIONID를 헤더에 포함
-        string jsession = CookieSession.Instance.GetCookie();
-        if (!string.IsNullOrEmpty(jsession))
+        string[] parts = setCookieHeader.Split(';');
+        foreach (var part in parts)
         {
-            uwr.SetRequestHeader("Cookie", $"JSESSIONID={jsession}");
-        }
-
-        yield return uwr.SendWebRequest();
-
-        if (uwr.result == UnityWebRequest.Result.Success)
-        {
-            // 서버가 Set-Cookie 헤더로 만료 쿠키를 내려주면, 로컬에서도 삭제
-            string setCookie = uwr.GetResponseHeader("Set-Cookie");
-            if (!string.IsNullOrEmpty(setCookie) && setCookie.Contains("JSESSIONID"))
+            var kv = part.Trim().Split('=');
+            if (kv.Length == 2 && kv[0] == cookieName)
             {
-                CookieSession.Instance.DeleteCookie();
-                Debug.Log("Cleared JSESSIONID from PlayerPrefs");
-            }
-            else
-            {
-                Debug.LogWarning("No JSESSIONID expiration header received.");
+                return kv[1];
             }
         }
-        else
-        {
-            Debug.LogError($"ClearCookie Error: {uwr.error}");
-        }
+        return null;
     }
 }
