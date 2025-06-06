@@ -41,21 +41,29 @@ public class TopPlayerRecordsDTOList
 
 public class GetRankingAPIFront : MonoBehaviour
 {
-    private const string mainURL = "http://localhost:8080/shooting-miner/play-records/serach";
+    private const string mainURL = "http://113.198.229.158:1435/shooting-miner/play-records/serach";
     private string maxStage = "/max-stage";
     private string maxScore = "/max-score";
     private string maxTotal = "/max-total";
     private string topUsers = "/top-users";
 
-    private void Awake()
-    {
-        Debug.Log(PlayerPrefs.GetString("nickname"));
-    }
-    void Start()
+    public void ReciveMaxStage()
     {
         StartCoroutine(GetMaxStage(maxStage));
+    }
+
+    public void ReciveMaxScore()
+    {
         StartCoroutine(GetMaxScore(maxScore));
+    }
+
+    public void ReciveMaxTotal()
+    {
         StartCoroutine(GetMaxTotal(maxTotal));
+    }
+
+    public void ReciveTopUsers()
+    {
         StartCoroutine(GetTopUsers(topUsers));
     }
 
@@ -65,13 +73,13 @@ public class GetRankingAPIFront : MonoBehaviour
         using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
             request.SetRequestHeader("Content-Type", "application/json");
-            string jsession = CookieSession.Instance.GetCookie();
+            string jsession = PlayerPrefs.GetString("JSESSIONID");
             request.SetRequestHeader("Cookie", $"JSESSIONID={jsession}");
 
             yield return request.SendWebRequest();
             if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
             {
-                Debug.LogError($"GET Error: {request.error}");
+                Debug.LogError($"GetRankingAPIFront -87 GET Error: {request.error}");
             }
             else 
             {
@@ -87,13 +95,13 @@ public class GetRankingAPIFront : MonoBehaviour
         using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
             request.SetRequestHeader("Content-Type", "application/json");
-            string jsession = CookieSession.Instance.GetCookie();
+            string jsession = PlayerPrefs.GetString("JSESSIONID");
             request.SetRequestHeader("Cookie", $"JSESSIONID={jsession}");
 
             yield return request.SendWebRequest();
             if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
             {
-                Debug.LogError($"GET Error: {request.error}");
+                Debug.LogError($"GetRankingAPIFront - 109 GET Error: {request.error}");
             }
             else
             {
@@ -109,13 +117,13 @@ public class GetRankingAPIFront : MonoBehaviour
         using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
             request.SetRequestHeader("Content-Type", "application/json");
-            string jsession = CookieSession.Instance.GetCookie();
+            string jsession = PlayerPrefs.GetString("JSESSIONID");
             request.SetRequestHeader("Cookie", $"JSESSIONID={jsession}");
 
             yield return request.SendWebRequest();
             if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
             {
-                Debug.LogError($"GET Error: {request.error}");
+                Debug.LogError($"GetRankingAPIFront - 131 GET Error: {request.error}");
             }
             else
             {

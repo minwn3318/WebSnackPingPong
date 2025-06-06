@@ -22,9 +22,10 @@ public class PostLogoutAPIFront : MonoBehaviour
 
         // 저장된 JSESSIONID를 헤더에 포함
         string jsession = PlayerPrefs.GetString("JSESSIONID");
+        Debug.Log("PostLogoutAPIFront - 25 Player JSESSIONID" + PlayerPrefs.GetString("JSESSIONID"));
         if (!string.IsNullOrEmpty(jsession))
         {
-            uwr.SetRequestHeader("Cookie - PostLogoutAPIFront 27 ", $"JSESSIONID={jsession}");
+            uwr.SetRequestHeader("Cookie", $"JSESSIONID={jsession}");
         }
 
         yield return uwr.SendWebRequest();
