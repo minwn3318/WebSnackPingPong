@@ -49,11 +49,12 @@ public class GameManager : MonoBehaviour
         int count = 3;
         while (count > 0)
         {
+            AudioManager.Instance.PlaygameOverClip();
             countdownTMP.text = count.ToString();
             yield return new WaitForSeconds(1f);
             count--;
         }
-
+        AudioManager.Instance.PlayloadingSceneClip();
         countdownTMP.text = "Start!";
         yield return new WaitForSeconds(1f);
 
@@ -89,6 +90,7 @@ public class GameManager : MonoBehaviour
 
     public void AddScore(int amount)
     {
+        AudioManager.Instance.PlaypointUpClip();
         score += amount;
         UpdateScoreUI();
     }

@@ -1,7 +1,8 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -18,54 +19,63 @@ public class PostLoginJoinAPIFront : MonoBehaviour
     private string checkURL = "/joincheck";
     private string loginURL = "/login";
 
-    public void SendJoin(string gameUser)
+    [Header("Message")]
+    [SerializeField] private string message;
+
+    public string SendJoin(string gameUser)
     {
         StartCoroutine(UserJoin(gameUser));
+        return message;
     }
-    public void SendJoinCheck(string gameUser)
+    public string SendJoinCheck(string gameUser)
     {
         StartCoroutine(UserJoinCheck(gameUser));
+        return message;
     }
-    public void SendLogin(string gameUser)
+    public string SendLogin(string gameUser)
     {
         StartCoroutine(UserLogin(gameUser));
+        return message;
     }
 
     IEnumerator UserJoin(string userid)
     {
         string url = $"{postURL}{joinURL}";
-
-        // ���� �����͸� JSON ���ڿ��� ����
-        var payload = new UserIdDTO
-        {
-            game_id = userid,
-        };
+        // 1) JSON 페이로드 준비
+        var payload = new UserIdDTO { game_id = userid };
         string jsonData = JsonUtility.ToJson(payload);
-
-        // UnityWebRequest ���� (POST + JSON)
         byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonData);
-        using (UnityWebRequest request = new UnityWebRequest(url, "POST"))
+        // 2) UnityWebRequest 생성 & 헤더/타임아웃 설정
+        UnityWebRequest request = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST)
         {
-            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-            request.downloadHandler = new DownloadHandlerBuffer();
-            request.SetRequestHeader("Content-Type", "application/json");
+            uploadHandler = new UploadHandlerRaw(bodyRaw),
+            downloadHandler = new DownloadHandlerBuffer(),
+            timeout = 10
+        };
+        request.SetRequestHeader("Content-Type", "application/json");
 
-            // ��û ����
-            yield return request.SendWebRequest();
+        // 3) 네트워크 요청 — yield은 오직 이 부분에만!
+        yield return request.SendWebRequest();
 
-            // ���� üũ
-            if (request.result == UnityWebRequest.Result.ConnectionError ||
-                request.result == UnityWebRequest.Result.ProtocolError)
-            {
-                Debug.LogError($"PostLoginJoinAPIFront - 57 POST Error: {request.error}");
-            }
-            else
-            {
-                string responseText = request.downloadHandler.text;
-                Debug.Log($"PostLoginJoinAPIFront - 62 POST Success: {responseText}");
-                UserIdDTO resp = JsonUtility.FromJson<UserIdDTO>(responseText);
-                Debug.Log($"PostLoginJoinAPIFront 78 message : {resp.message}");
-            }
+        // 4) 결과 처리 및 예외 안전망
+        try
+        {
+            string responseText = request.downloadHandler.text;
+            Debug.Log($"UserJoin Success: {responseText}");
+            payload = JsonUtility.FromJson<UserIdDTO>(responseText);
+            Debug.Log($"UserJoin message: {payload.message}");
+            message = payload.message;
+        }
+        catch (Exception ex)
+        {
+            // JSON 파싱이나 내부 로직 에러까지 안전하게 잡아냄
+            Debug.LogError($"UserJoin Exception: {ex.GetType().Name} – {ex.Message}");
+            message = payload.message;
+        }
+        finally
+        {
+            // 꼭 Dispose() 해 줘야 핸들 누수 방지
+            request.Dispose();
         }
     }
 
@@ -73,91 +83,100 @@ public class PostLoginJoinAPIFront : MonoBehaviour
     {
         string url = $"{postURL}{checkURL}";
 
-        // ���� �����͸� JSON ���ڿ��� ����
-        var payload = new UserIdDTO
-        {
-            game_id = userid,
-        };
+        var payload = new UserIdDTO { game_id = userid };
         string jsonData = JsonUtility.ToJson(payload);
-
-        // UnityWebRequest ���� (POST + JSON)
         byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonData);
-        using (UnityWebRequest request = new UnityWebRequest(url, "POST"))
+
+        // 2) UnityWebRequest 생성 & 헤더/타임아웃 설정
+        UnityWebRequest request = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST)
         {
-            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-            request.downloadHandler = new DownloadHandlerBuffer();
-            request.SetRequestHeader("Content-Type", "application/json");
+            uploadHandler = new UploadHandlerRaw(bodyRaw),
+            downloadHandler = new DownloadHandlerBuffer(),
+            timeout = 10
+        };
+        request.SetRequestHeader("Content-Type", "application/json");
 
-            // ��û ����
-            yield return request.SendWebRequest();
+        // 3) 네트워크 요청 — yield은 오직 이 부분에만!
+        yield return request.SendWebRequest();
 
-            // ���� üũ
-            if (request.result == UnityWebRequest.Result.ConnectionError ||
-                request.result == UnityWebRequest.Result.ProtocolError)
-            {
-                Debug.LogError($"PostLoginJoinAPIFront - 93 POST Error: {request.error}");
-            }
-            else
-            {
-                string responseText = request.downloadHandler.text;
-                Debug.Log($"POST Success: {responseText}");
-                UserIdDTO resp = JsonUtility.FromJson<UserIdDTO>(responseText);
-                Debug.Log($"PostLoginJoinAPIFront 116 message :{resp.message}");
-            }
+        // 4) 결과 처리 및 예외 안전망
+        try
+        {
+            string responseText = request.downloadHandler.text;
+            Debug.Log($"UserJoin Success: {responseText}");
+            payload = JsonUtility.FromJson<UserIdDTO>(responseText);
+            Debug.Log($"UserJoin message: {payload.message}");
+            message = payload.message;
+        }
+        catch (Exception ex)
+        {
+            // JSON 파싱이나 내부 로직 에러까지 안전하게 잡아냄
+            Debug.LogError($"UserJoin Exception: {ex.GetType().Name} – {ex.Message}");
+            message = payload.message;
+        }
+        finally
+        {
+            // 꼭 Dispose() 해 줘야 핸들 누수 방지
+            request.Dispose();
         }
     }
+
     IEnumerator UserLogin(string userid)
     {
         string url = $"{postURL}{loginURL}";
 
-        // ���� �����͸� JSON ���ڿ��� ����
-        var payload = new UserIdDTO
-        {
-            game_id = userid,
-        };
+        var payload = new UserIdDTO { game_id = userid };
         string jsonData = JsonUtility.ToJson(payload);
-
-        // UnityWebRequest ���� (POST + JSON)
         byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonData);
-        using (UnityWebRequest request = new UnityWebRequest(url, "POST"))
+
+        // 2) UnityWebRequest 생성 & 헤더/타임아웃 설정
+        UnityWebRequest request = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST)
         {
-            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-            request.downloadHandler = new DownloadHandlerBuffer();
-            request.SetRequestHeader("Content-Type", "application/json");
+            uploadHandler = new UploadHandlerRaw(bodyRaw),
+            downloadHandler = new DownloadHandlerBuffer(),
+            timeout = 10
+        };
+        request.SetRequestHeader("Content-Type", "application/json");
 
-            // ��û ����
-            yield return request.SendWebRequest();
+        // 3) 네트워크 요청 — yield은 오직 이 부분에만!
+        yield return request.SendWebRequest();
 
-            // ���� üũ
-            if (request.result == UnityWebRequest.Result.ConnectionError ||
-                request.result == UnityWebRequest.Result.ProtocolError)
+        // 에러 체
+        try
+        {
+            string responseText = request.downloadHandler.text;
+            Debug.Log($"POST Success: {responseText}");
+            payload = JsonUtility.FromJson<UserIdDTO>(responseText);
+            Debug.Log($"PostLoginJoinAPIFront - 153 message : {payload.message}");
+
+            string setCookie = request.GetResponseHeader("Set-Cookie");
+            Debug.Log($"PostLoginJoinAPIFront - 156 cookie: {setCookie}");
+
+            if (!string.IsNullOrEmpty(setCookie))
             {
-                Debug.LogError($"PostLoginJoinAPIFront - 146 POST Error: {request.error}");
-            }
-            else
-            {
-                string responseText = request.downloadHandler.text;
-                Debug.Log($"POST Success: {responseText}");
-                UserIdDTO resp = JsonUtility.FromJson<UserIdDTO>(responseText);
-                Debug.Log($"PostLoginJoinAPIFront - 153 message : {resp.message}");
-
-                string setCookie = request.GetResponseHeader("Set-Cookie");
-                Debug.Log($"PostLoginJoinAPIFront - 156 cookie: {setCookie}");
-
-                if (!string.IsNullOrEmpty(setCookie))
+                string jsession = ParseAndSaveCookie(setCookie, "JSESSIONID");
+                if (!string.IsNullOrEmpty(jsession))
                 {
-                    string jsession = ParseAndSaveCookie(setCookie, "JSESSIONID");
-                    if (!string.IsNullOrEmpty(jsession))
-                    {
-                        PlayerPrefs.SetString("JSESSIONID", jsession);
-                        PlayerPrefs.SetString("nickname", userid);
-                        PlayerPrefs.Save();
-                        Debug.Log($" PostLoginJoinAPIFront - 166 Saved JSESSIONID = {jsession}");
-                        Debug.Log("PostLoginJoinAPIFront - 167 Player JSESSIONID" + PlayerPrefs.GetString("JSESSIONID"));
-                        Debug.Log("PostLoginJoinAPIFront - 168 Player nickname" + PlayerPrefs.GetString("nickname"));
-                    }
+                    PlayerPrefs.SetString("JSESSIONID", jsession);
+                    PlayerPrefs.SetString("nickname", userid);
+                    PlayerPrefs.Save();
+                    Debug.Log($" PostLoginJoinAPIFront - 166 Saved JSESSIONID = {jsession}");
+                    Debug.Log("PostLoginJoinAPIFront - 167 Player JSESSIONID" + PlayerPrefs.GetString("JSESSIONID"));
+                    Debug.Log("PostLoginJoinAPIFront - 168 Player nickname" + PlayerPrefs.GetString("nickname"));
                 }
             }
+            message = payload.message;
+        }
+        catch (Exception ex)
+        {
+            // JSON 파싱이나 내부 로직 에러까지 안전하게 잡아냄
+            Debug.LogError($"UserJoin Exception: {ex.GetType().Name} – {ex.Message}");
+            message = payload.message;
+        }
+        finally
+        {
+            // 꼭 Dispose() 해 줘야 핸들 누수 방지
+            request.Dispose();
         }
     }
 

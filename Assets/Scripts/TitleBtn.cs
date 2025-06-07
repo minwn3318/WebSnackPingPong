@@ -21,6 +21,9 @@ public class TitleBtn : MonoBehaviour
     public TMP_Text confirmText;
     public GameObject titleImage;
 
+    [Header("JoinLogin")]
+    [SerializeField] private PostLoginJoinAPIFront loginJoin;
+    [Header("save message")]
     private string currentUserId;
 
     void Start()
@@ -33,6 +36,7 @@ public class TitleBtn : MonoBehaviour
 
     public void OnOptionButton()
     {
+        AudioManager.Instance.PlaybuttonClickClip();
         Debug.Log("옵션 버튼 클릭");
         SetCanvasGroup(optionGroup, true);
         loginPanel.SetActive(false);
@@ -46,6 +50,7 @@ public class TitleBtn : MonoBehaviour
 
     public void OnStartButton()
     {
+        AudioManager.Instance.PlaybuttonSelectClip();
         Debug.Log("시작 버튼 클릭 → 로그인 패널 열기");
         SetCanvasGroup(mainGroup, false);
         loginPanel.SetActive(true);
@@ -53,6 +58,7 @@ public class TitleBtn : MonoBehaviour
 
     public void OnBackButton()
     {
+        AudioManager.Instance.PlaybuttonClickClip();
         Debug.Log("옵션 메뉴 닫기");
         SetCanvasGroup(optionGroup, false);
 
@@ -64,6 +70,7 @@ public class TitleBtn : MonoBehaviour
 
     public void OnLoginButton()
     {
+        AudioManager.Instance.PlaybuttonSelectClip();
         string inputId = idInputField.text.Trim();
 
         if (string.IsNullOrEmpty(inputId))
@@ -71,28 +78,22 @@ public class TitleBtn : MonoBehaviour
             Debug.Log("아이디를 입력하세요.");
             return;
         }
-
-        if (CheckUserInDatabase(inputId))
-        {
-            currentUserId = inputId;
-            confirmText.text = $"Is '{currentUserId}' you?";
-            loginPanel.SetActive(false);
-            confirmPanel.SetActive(true);
-        }
-        else
-        {
-            Debug.Log("존재하지 않는 유저입니다.");
-        }
+        currentUserId = inputId;
+        confirmText.text = $"Is '{currentUserId}' you?";
+        loginPanel.SetActive(false);
+        confirmPanel.SetActive(true);
     }
 
     public void OnConfirmYes()
     {
+        AudioManager.Instance.PlaybuttonSelectClip();
         Debug.Log("유저 확인 완료 → 로딩 화면으로 이동");
         SceneManager.LoadScene("Loading");
     }
 
     public void OnConfirmNo()
     {
+        AudioManager.Instance.PlaybuttonClickClip();
         Debug.Log("유저 확인 취소 → 로그인 패널로 돌아감");
         confirmPanel.SetActive(false);
         loginPanel.SetActive(true);
@@ -100,6 +101,7 @@ public class TitleBtn : MonoBehaviour
 
     public void OnNewAccountButton()
     {
+        AudioManager.Instance.PlaybuttonSelectClip();
         string inputId = idInputField.text.Trim();
 
         if (string.IsNullOrEmpty(inputId))
@@ -138,6 +140,7 @@ public class TitleBtn : MonoBehaviour
         {
             if (loginPanel.activeSelf)
             {
+                AudioManager.Instance.PlaybuttonClickClip();
                 loginPanel.SetActive(false);
                 SetCanvasGroup(mainGroup, true);
                 if (titleImage != null)
@@ -147,6 +150,7 @@ public class TitleBtn : MonoBehaviour
             }
             else if (confirmPanel.activeSelf)
             {
+                AudioManager.Instance.PlaybuttonClickClip();
                 confirmPanel.SetActive(false);
                 loginPanel.SetActive(true);
             }

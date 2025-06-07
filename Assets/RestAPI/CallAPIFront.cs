@@ -16,6 +16,8 @@ public class CallAPIFront : MonoBehaviour
     [Header("score")]
     public int sc;
 
+    [Header("message")]
+    public string message;
     // Update is called once per frame
     void Update()
     {
@@ -25,15 +27,15 @@ public class CallAPIFront : MonoBehaviour
         }
         if (Input.GetKeyUp(KeyCode.S))
         {
-            PostLoginJoinAPIFront.SendJoin("tesrer01");
+            message = PostLoginJoinAPIFront.SendJoin("tesrer01");
         }
         if (Input.GetKeyUp(KeyCode.D))
         {
-            PostLoginJoinAPIFront.SendJoinCheck("tesrer01");
+            message = PostLoginJoinAPIFront.SendJoinCheck("tesrer01");
         }
         if (Input.GetKeyUp(KeyCode.F))
         {
-            PostLoginJoinAPIFront.SendLogin("tesrer01");
+            message = PostLoginJoinAPIFront.SendLogin("tesrer01");
         }
         if (Input.GetKeyUp(KeyCode.G))
         {
