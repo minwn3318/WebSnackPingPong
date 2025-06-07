@@ -52,11 +52,13 @@ public class Block : MonoBehaviour
     {
         if (collision.collider.CompareTag("Ball"))
         {
+            AudioManager.Instance.PlayblockCountDownClip();
             count--;
             UpdateText();
 
             if (count <= 0)
             {
+                AudioManager.Instance.PlayblockBreakClip();
                 DisableInteract();
             }
         }

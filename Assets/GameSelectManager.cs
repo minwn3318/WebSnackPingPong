@@ -25,6 +25,7 @@ public class GameSelectManager : MonoBehaviour
 
     public void BackToMain()
     {
+        AudioManager.Instance.PlaybuttonClickClip();
         SceneManager.LoadScene("TitleScene");
     }
 }

@@ -88,6 +88,7 @@ public class Player : MonoBehaviour
 
         for (int i = 0; i < polling.Capacity; i++)
         {
+            AudioManager.Instance.PlayBallLaunch();
             GameObject obj_v = polling.PopQueue();
             if (obj_v == null) continue;
 

@@ -41,135 +41,122 @@ public class TopPlayerRecordsDTOList
 
 public class GetRankingAPIFront : MonoBehaviour
 {
-    private const string mainURL = "http://localhost:8080/shooting-miner/play-records/serach";
+    private const string mainURL = "http://113.198.229.158:1435/shooting-miner/play-records/serach";
     private string maxStage = "/max-stage";
     private string maxScore = "/max-score";
     private string maxTotal = "/max-total";
     private string topUsers = "/top-users";
 
-    [Header("UserId")]
-    [SerializeField]
-    private string gameID = "gamer01";
-    public TMP_Text userID;
+    [Header("Message")]
+    [SerializeField] private int message;
 
-    [Header("Stage")]
-    [SerializeField]
-    private TMP_Text TMPstage;
-
-    [Header("Score")]
-    [SerializeField]
-    private TMP_Text TMPscore;
-
-    [Header("maxStage")]
-    [SerializeField]
-    private TMP_Text TMPmaxStage;
-
-    [Header("maxScore")]
-    [SerializeField]
-    private TMP_Text TMPmaxScoreTX;
-
-    [Header("Rank 1")]
-    [SerializeField]
-    private TMP_Text TMPone;
-
-    [Header("Rank 2")]
-    [SerializeField]
-    private TMP_Text TMPsecond;
-
-    [Header("Rank 3")]
-    [SerializeField]
-    private TMP_Text TMPthird;
-
-    private void Awake()
-    {
-        SetGameID("gamer01");
-        userID.text = gameID;
-    }
-    void Start()
+    public void ReciveMaxStage()
     {
         StartCoroutine(GetMaxStage(maxStage));
+    }
+
+    public void ReciveMaxScore()
+    {
         StartCoroutine(GetMaxScore(maxScore));
+    }
+
+    public void ReciveMaxTotal()
+    {
         StartCoroutine(GetMaxTotal(maxTotal));
+    }
+
+    public void ReciveTopUsers()
+    {
         StartCoroutine(GetTopUsers(topUsers));
-    }
-
-    public void SetGameID(string id)
-    {
-        gameID = id;
-    }
-
-    public string GetGameID()
-    {
-        return gameID;
     }
 
     IEnumerator GetMaxStage(string stageURL)
     {
-        string url = $"{mainURL}{stageURL}?userId={UnityWebRequest.EscapeURL(GetGameID())}";
+        string url = $"{mainURL}{stageURL}";
+        PlayerStageDTO resp = new PlayerStageDTO();
         using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
             request.SetRequestHeader("Content-Type", "application/json");
-            string jsession = CookieSession.Instance.GetCookie();
+            string jsession = PlayerPrefs.GetString("JSESSIONID");
             request.SetRequestHeader("Cookie", $"JSESSIONID={jsession}");
 
             yield return request.SendWebRequest();
-            if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
-            {
-                Debug.LogError($"GET Error: {request.error}");
-            }
-            else 
+
+            try 
             {
                 string jsonResponse = request.downloadHandler.text;
-                PlayerStageDTO resp = JsonUtility.FromJson<PlayerStageDTO>(jsonResponse);
-                Debug.Log(resp.stage);
-                TMPstage.text = resp.stage.ToString();
-
+                resp = JsonUtility.FromJson<PlayerStageDTO>(jsonResponse);
+                Debug.Log("max stage : "+resp.stage);
+                message = resp.stage;
+            }
+            catch (Exception ex)
+            {
+                message = resp.stage;
+            }
+            finally
+            {
+                // 꼭 Dispose() 해 줘야 핸들 누수 방지
+                request.Dispose();
             }
         }
     }
     IEnumerator GetMaxScore(string scoreURL)
     {
-        string url = $"{mainURL}{scoreURL}?userId={UnityWebRequest.EscapeURL(GetGameID())}";
+        string url = $"{mainURL}{scoreURL}";
+        PlayerScoreDTO resp = new PlayerScoreDTO();
         using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
             request.SetRequestHeader("Content-Type", "application/json");
-            string jsession = CookieSession.Instance.GetCookie();
+            string jsession = PlayerPrefs.GetString("JSESSIONID");
             request.SetRequestHeader("Cookie", $"JSESSIONID={jsession}");
 
             yield return request.SendWebRequest();
-            if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
-            {
-                Debug.LogError($"GET Error: {request.error}");
-            }
-            else
+            try
             {
                 string jsonResponse = request.downloadHandler.text;
-                PlayerScoreDTO resp = JsonUtility.FromJson<PlayerScoreDTO>(jsonResponse);
-                Debug.Log(resp.score);
-                TMPscore.text = resp.score.ToString();
+                resp = JsonUtility.FromJson<PlayerScoreDTO>(jsonResponse);
+                Debug.Log("max score : " + resp.score);
+                message = resp.score;
+            }
+            catch (Exception ex)
+            {
+                message = resp.score;
+            }
+            finally
+            {
+                // 꼭 Dispose() 해 줘야 핸들 누수 방지
+                request.Dispose();
             }
         }
     }
     IEnumerator GetMaxTotal(string totalURL)
     {
-        string url = $"{mainURL}{totalURL}?userId={UnityWebRequest.EscapeURL(GetGameID())}";
+        string url = $"{mainURL}{totalURL}";
+        PlayerTotalDTO resp = new PlayerTotalDTO();
         using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
             request.SetRequestHeader("Content-Type", "application/json");
-            string jsession = CookieSession.Instance.GetCookie();
+            string jsession = PlayerPrefs.GetString("JSESSIONID");
             request.SetRequestHeader("Cookie", $"JSESSIONID={jsession}");
 
             yield return request.SendWebRequest();
-            if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
-            {
-                Debug.LogError($"GET Error: {request.error}");
-            }
-            else
+
+            try
             {
                 string jsonResponse = request.downloadHandler.text;
-                PlayerTotalDTO resp = JsonUtility.FromJson<PlayerTotalDTO>(jsonResponse);
-                TMPmaxStage.text = resp.stage.ToString();
-                TMPmaxScoreTX.text = resp.score.ToString();
+                resp = JsonUtility.FromJson<PlayerTotalDTO>(jsonResponse);
+                Debug.Log("max total score : " + resp.score);
+                Debug.Log("max total stage : " + resp.stage);
+                message = resp.score + resp.stage;
+            }
+            catch (Exception ex)
+            {
+                message = resp.score +resp.stage;
+            }
+            finally
+            {
+                // 꼭 Dispose() 해 줘야 핸들 누수 방지
+                request.Dispose();
             }
         }
     }
@@ -177,27 +164,34 @@ public class GetRankingAPIFront : MonoBehaviour
     IEnumerator GetTopUsers(string topURL)
     {
         string url = $"{mainURL}{topURL}";
+        TopPlayerRecordsDTOList resp = new TopPlayerRecordsDTOList();
         using (UnityWebRequest request = UnityWebRequest.Get(url))
         {
             request.SetRequestHeader("Content-Type", "application/json");
 
             yield return request.SendWebRequest();
-            if (request.result == UnityWebRequest.Result.ConnectionError || request.result == UnityWebRequest.Result.ProtocolError)
-            {
-                Debug.LogError($"GET Error: {request.error}");
-            }
-            else
+
+            try
             {
                 string jsonResponse = request.downloadHandler.text;
                 string wrappedJson = "{\"list\":" + jsonResponse + "}";
-                TopPlayerRecordsDTOList resp = JsonUtility.FromJson<TopPlayerRecordsDTOList>(wrappedJson);
+                resp = JsonUtility.FromJson<TopPlayerRecordsDTOList>(wrappedJson);
                 TopPlayerRecordsDTO[] ranking = resp.list;
 
                 List<TopPlayerRecordsDTO> scoreList = new List<TopPlayerRecordsDTO>(ranking);
-                TMPone.text = "Rank 1 : " + scoreList[0].game_id.ToString() + " : " + scoreList[0].stage.ToString() + " : " + scoreList[0].score.ToString();
-                TMPsecond.text = "Rank 2 : " + scoreList[1].game_id.ToString() + " : " + scoreList[1].stage.ToString() + " : " + scoreList[1].score.ToString();
-                TMPthird.text = "Rank 3 : " + scoreList[2].game_id.ToString() + " : " + scoreList[2].stage.ToString() + " : " + scoreList[2].score.ToString();
-
+                Debug.Log("Rank 1 : ID - " + scoreList[0].game_id + " : Stage - " + scoreList[0].stage + " : Score - " + scoreList[0].score);
+                Debug.Log("Rank 2 : ID - " + scoreList[1].game_id + " : Stage - " + scoreList[1].stage + " : Score - " + scoreList[1].score);
+                Debug.Log("Rank 3 : ID - " + scoreList[2].game_id + " : Stage - " + scoreList[2].stage + " : Score - " + scoreList[2].score);
+                message = scoreList[0].stage + scoreList[0].score;
+            }
+            catch (Exception ex)
+            {
+                message = resp.list[0].stage + resp.list[0].score; 
+            }
+            finally
+            {
+                // 꼭 Dispose() 해 줘야 핸들 누수 방지
+                request.Dispose();
             }
         }
     }

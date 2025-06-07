@@ -1,7 +1,8 @@
-using System;
+ï»¿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -13,64 +14,110 @@ public class UserIdDTO
 }
 public class PostLoginJoinAPIFront : MonoBehaviour
 {
-    private const string postURL = "http://localhost:8080/shooting-miner/userids";
+    private const string postURL = "http://113.198.229.158:1435/shooting-miner/userids";
     private string joinURL = "/join";
+    private string checkURL = "/joincheck";
     private string loginURL = "/login";
-    private string logoutURL = "/logout";
 
-    public void SendJoin(string gameUser)
+    [Header("Message")]
+    [SerializeField] private string message;
+
+    public string SendJoin(string gameUser)
     {
         StartCoroutine(UserJoin(gameUser));
+        return message;
     }
-
-    public void SendLogin(string gameUser)
+    public string SendJoinCheck(string gameUser)
+    {
+        StartCoroutine(UserJoinCheck(gameUser));
+        return message;
+    }
+    public string SendLogin(string gameUser)
     {
         StartCoroutine(UserLogin(gameUser));
+        return message;
     }
-
-    public void SendLogout()
-    {
-        StartCoroutine(UserLogout());
-    }
-
 
     IEnumerator UserJoin(string userid)
     {
         string url = $"{postURL}{joinURL}";
-
-        // º¸³¾ µ¥ÀÌÅÍ¸¦ JSON ¹®ÀÚ¿­·Î »ı¼º
-        var payload = new UserIdDTO
-        {
-            game_id = userid,
-        };
+        // 1) JSON í˜ì´ë¡œë“œ ì¤€ë¹„
+        var payload = new UserIdDTO { game_id = userid };
         string jsonData = JsonUtility.ToJson(payload);
-
-        // UnityWebRequest »ı¼º (POST + JSON)
         byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonData);
-        using (UnityWebRequest request = new UnityWebRequest(url, "POST"))
+        // 2) UnityWebRequest ìƒì„± & í—¤ë”/íƒ€ì„ì•„ì›ƒ ì„¤ì •
+        UnityWebRequest request = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST)
         {
-            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-            request.downloadHandler = new DownloadHandlerBuffer();
-            request.SetRequestHeader("Content-Type", "application/json");
-            // ÀÎÁõ Çì´õ°¡ ÇÊ¿äÇÏ¸é Ãß°¡
-            // request.SetRequestHeader("Authorization", "Bearer YOUR_TOKEN_HERE");
+            uploadHandler = new UploadHandlerRaw(bodyRaw),
+            downloadHandler = new DownloadHandlerBuffer(),
+            timeout = 10
+        };
+        request.SetRequestHeader("Content-Type", "application/json");
 
-            // ¿äÃ» Àü¼Û
-            yield return request.SendWebRequest();
+        // 3) ë„¤íŠ¸ì›Œí¬ ìš”ì²­ â€” yieldì€ ì˜¤ì§ ì´ ë¶€ë¶„ì—ë§Œ!
+        yield return request.SendWebRequest();
 
-            // ¿¡·¯ Ã¼Å©
-            if (request.result == UnityWebRequest.Result.ConnectionError ||
-                request.result == UnityWebRequest.Result.ProtocolError)
-            {
-                Debug.LogError($"POST Error: {request.error}");
-            }
-            else
-            {
-                string responseText = request.downloadHandler.text;
-                Debug.Log($"POST Success: {responseText}");
-                // ÀÀ´ä JSON Ã³¸®
-                // var result = JsonUtility.FromJson<YourResultType>(responseText);
-            }
+        // 4) ê²°ê³¼ ì²˜ë¦¬ ë° ì˜ˆì™¸ ì•ˆì „ë§
+        try
+        {
+            string responseText = request.downloadHandler.text;
+            Debug.Log($"UserJoin Success: {responseText}");
+            payload = JsonUtility.FromJson<UserIdDTO>(responseText);
+            Debug.Log($"UserJoin message: {payload.message}");
+            message = payload.message;
+        }
+        catch (Exception ex)
+        {
+            // JSON íŒŒì‹±ì´ë‚˜ ë‚´ë¶€ ë¡œì§ ì—ëŸ¬ê¹Œì§€ ì•ˆì „í•˜ê²Œ ì¡ì•„ëƒ„
+            Debug.LogError($"UserJoin Exception: {ex.GetType().Name} â€“ {ex.Message}");
+            message = payload.message;
+        }
+        finally
+        {
+            // ê¼­ Dispose() í•´ ì¤˜ì•¼ í•¸ë“¤ ëˆ„ìˆ˜ ë°©ì§€
+            request.Dispose();
+        }
+    }
+
+    IEnumerator UserJoinCheck(string userid)
+    {
+        string url = $"{postURL}{checkURL}";
+
+        var payload = new UserIdDTO { game_id = userid };
+        string jsonData = JsonUtility.ToJson(payload);
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonData);
+
+        // 2) UnityWebRequest ìƒì„± & í—¤ë”/íƒ€ì„ì•„ì›ƒ ì„¤ì •
+        UnityWebRequest request = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST)
+        {
+            uploadHandler = new UploadHandlerRaw(bodyRaw),
+            downloadHandler = new DownloadHandlerBuffer(),
+            timeout = 10
+        };
+        request.SetRequestHeader("Content-Type", "application/json");
+
+        // 3) ë„¤íŠ¸ì›Œí¬ ìš”ì²­ â€” yieldì€ ì˜¤ì§ ì´ ë¶€ë¶„ì—ë§Œ!
+        yield return request.SendWebRequest();
+
+        // 4) ê²°ê³¼ ì²˜ë¦¬ ë° ì˜ˆì™¸ ì•ˆì „ë§
+        try
+        {
+            string responseText = request.downloadHandler.text;
+            Debug.Log($"UserJoin Success: {responseText}");
+            payload = JsonUtility.FromJson<UserIdDTO>(responseText);
+            Debug.Log($"UserJoin message: {payload.message}");
+            message = payload.message;
+        }
+        catch (Exception ex)
+        {
+            // JSON íŒŒì‹±ì´ë‚˜ ë‚´ë¶€ ë¡œì§ ì—ëŸ¬ê¹Œì§€ ì•ˆì „í•˜ê²Œ ì¡ì•„ëƒ„
+            Debug.LogError($"UserJoin Exception: {ex.GetType().Name} â€“ {ex.Message}");
+            message = payload.message;
+        }
+        finally
+        {
+            // ê¼­ Dispose() í•´ ì¤˜ì•¼ í•¸ë“¤ ëˆ„ìˆ˜ ë°©ì§€
+            request.Dispose();
         }
     }
 
@@ -78,88 +125,72 @@ public class PostLoginJoinAPIFront : MonoBehaviour
     {
         string url = $"{postURL}{loginURL}";
 
-        // º¸³¾ µ¥ÀÌÅÍ¸¦ JSON ¹®ÀÚ¿­·Î »ı¼º
-        var payload = new UserIdDTO
-        {
-            game_id = userid,
-        };
+        var payload = new UserIdDTO { game_id = userid };
         string jsonData = JsonUtility.ToJson(payload);
-
-        // UnityWebRequest »ı¼º (POST + JSON)
         byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonData);
-        using (UnityWebRequest request = new UnityWebRequest(url, "POST"))
+
+        // 2) UnityWebRequest ìƒì„± & í—¤ë”/íƒ€ì„ì•„ì›ƒ ì„¤ì •
+        UnityWebRequest request = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST)
         {
-            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
-            request.downloadHandler = new DownloadHandlerBuffer();
-            request.SetRequestHeader("Content-Type", "application/json");
-            // ÀÎÁõ Çì´õ°¡ ÇÊ¿äÇÏ¸é Ãß°¡
-            // request.SetRequestHeader("Authorization", "Bearer YOUR_TOKEN_HERE");
+            uploadHandler = new UploadHandlerRaw(bodyRaw),
+            downloadHandler = new DownloadHandlerBuffer(),
+            timeout = 10
+        };
+        request.SetRequestHeader("Content-Type", "application/json");
 
-            // ¿äÃ» Àü¼Û
-            yield return request.SendWebRequest();
+        // 3) ë„¤íŠ¸ì›Œí¬ ìš”ì²­ â€” yieldì€ ì˜¤ì§ ì´ ë¶€ë¶„ì—ë§Œ!
+        yield return request.SendWebRequest();
 
-            // ¿¡·¯ Ã¼Å©
-            if (request.result == UnityWebRequest.Result.ConnectionError ||
-                request.result == UnityWebRequest.Result.ProtocolError)
+        // ì—ëŸ¬ ì²´
+        try
+        {
+            string responseText = request.downloadHandler.text;
+            Debug.Log($"POST Success: {responseText}");
+            payload = JsonUtility.FromJson<UserIdDTO>(responseText);
+            Debug.Log($"PostLoginJoinAPIFront - 153 message : {payload.message}");
+
+            string setCookie = request.GetResponseHeader("Set-Cookie");
+            Debug.Log($"PostLoginJoinAPIFront - 156 cookie: {setCookie}");
+
+            if (!string.IsNullOrEmpty(setCookie))
             {
-                Debug.LogError($"POST Error: {request.error}");
-            }
-            else
-            {
-                string responseText = request.downloadHandler.text;
-                Debug.Log($"POST Success: {responseText}");
-                // ÀÀ´ä JSON Ã³¸®
-                // var result = JsonUtility.FromJson<YourResultType>(responseText);
-                string setCookie = request.GetResponseHeader("Set-Cookie");
-                if (!string.IsNullOrEmpty(setCookie))
+                string jsession = ParseAndSaveCookie(setCookie, "JSESSIONID");
+                if (!string.IsNullOrEmpty(jsession))
                 {
-                    string jsession = CookieSession.Instance.ParseAndSaveCookie(setCookie, "JSESSIONID");
-                    if (!string.IsNullOrEmpty(jsession))
-                    {
-                        PlayerPrefs.SetString("JSESSIONID", jsession);
-                        PlayerPrefs.Save();
-                        Debug.Log($"Saved JSESSIONID = {jsession}");
-                    }
+                    PlayerPrefs.SetString("JSESSIONID", jsession);
+                    PlayerPrefs.SetString("nickname", userid);
+                    PlayerPrefs.Save();
+                    Debug.Log($" PostLoginJoinAPIFront - 166 Saved JSESSIONID = {jsession}");
+                    Debug.Log("PostLoginJoinAPIFront - 167 Player JSESSIONID" + PlayerPrefs.GetString("JSESSIONID"));
+                    Debug.Log("PostLoginJoinAPIFront - 168 Player nickname" + PlayerPrefs.GetString("nickname"));
                 }
             }
+            message = payload.message;
+        }
+        catch (Exception ex)
+        {
+            // JSON íŒŒì‹±ì´ë‚˜ ë‚´ë¶€ ë¡œì§ ì—ëŸ¬ê¹Œì§€ ì•ˆì „í•˜ê²Œ ì¡ì•„ëƒ„
+            Debug.LogError($"UserJoin Exception: {ex.GetType().Name} â€“ {ex.Message}");
+            message = payload.message;
+        }
+        finally
+        {
+            // ê¼­ Dispose() í•´ ì¤˜ì•¼ í•¸ë“¤ ëˆ„ìˆ˜ ë°©ì§€
+            request.Dispose();
         }
     }
-    public IEnumerator UserLogout()
+
+    public string ParseAndSaveCookie(string setCookieHeader, string cookieName)
     {
-        string url = $"{postURL}{logoutURL}";
-
-        // ºó ¹ÙµğÀÇ POST ¿äÃ» »ı¼º
-        UnityWebRequest uwr = new UnityWebRequest(url, "POST");
-        uwr.uploadHandler = new UploadHandlerRaw(new byte[0]);
-        uwr.downloadHandler = new DownloadHandlerBuffer();
-        uwr.SetRequestHeader("Content-Type", "application/json");
-
-        // ÀúÀåµÈ JSESSIONID¸¦ Çì´õ¿¡ Æ÷ÇÔ
-        string jsession = CookieSession.Instance.GetCookie();
-        if (!string.IsNullOrEmpty(jsession))
+        string[] parts = setCookieHeader.Split(';');
+        foreach (var part in parts)
         {
-            uwr.SetRequestHeader("Cookie", $"JSESSIONID={jsession}");
-        }
-
-        yield return uwr.SendWebRequest();
-
-        if (uwr.result == UnityWebRequest.Result.Success)
-        {
-            // ¼­¹ö°¡ Set-Cookie Çì´õ·Î ¸¸·á ÄíÅ°¸¦ ³»·ÁÁÖ¸é, ·ÎÄÃ¿¡¼­µµ »èÁ¦
-            string setCookie = uwr.GetResponseHeader("Set-Cookie");
-            if (!string.IsNullOrEmpty(setCookie) && setCookie.Contains("JSESSIONID"))
+            var kv = part.Trim().Split('=');
+            if (kv.Length == 2 && kv[0] == cookieName)
             {
-                CookieSession.Instance.DeleteCookie();
-                Debug.Log("Cleared JSESSIONID from PlayerPrefs");
-            }
-            else
-            {
-                Debug.LogWarning("No JSESSIONID expiration header received.");
+                return kv[1];
             }
         }
-        else
-        {
-            Debug.LogError($"ClearCookie Error: {uwr.error}");
-        }
+        return null;
     }
 }

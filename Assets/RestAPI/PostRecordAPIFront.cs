@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Text;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Networking;
 
 [Serializable]
@@ -14,7 +15,7 @@ public class PlayRecordsDTO
 }
 public class PostRecordAPIFront : MonoBehaviour
 {
-    private const string postURL = "http://localhost:8080/shooting-miner/play-records/save";
+    private const string postURL = "http://113.198.229.158:1435/shooting-miner/play-records/save";
 
     public void SendRecord(int gameScore, int gameStage)
     {
@@ -40,10 +41,9 @@ public class PostRecordAPIFront : MonoBehaviour
             request.uploadHandler = new UploadHandlerRaw(bodyRaw);
             request.downloadHandler = new DownloadHandlerBuffer();
             request.SetRequestHeader("Content-Type", "application/json");
-            string jsession = CookieSession.Instance.GetCookie();
+
+            string jsession = PlayerPrefs.GetString("JSESSIONID");
             request.SetRequestHeader("Cookie", $"JSESSIONID={jsession}");
-            // 인증 헤더가 필요하면 추가
-            // request.SetRequestHeader("Authorization", "Bearer YOUR_TOKEN_HERE");
 
             // 요청 전송
             yield return request.SendWebRequest();
@@ -52,14 +52,14 @@ public class PostRecordAPIFront : MonoBehaviour
             if (request.result == UnityWebRequest.Result.ConnectionError ||
                 request.result == UnityWebRequest.Result.ProtocolError)
             {
-                Debug.LogError($"POST Error: {request.error}");
+                Debug.LogError($"PostRecordAPIFront - 54 POST Error: {request.error}");
             }
             else
             {
                 string responseText = request.downloadHandler.text;
-                Debug.Log($"POST Success: {responseText}");
-                // 응답 JSON 처리
-                // var result = JsonUtility.FromJson<YourResultType>(responseText);
+                Debug.Log($"PostRecordAPIFront - 59 POST Success: {responseText}");
+                PlayRecordsDTO resp = JsonUtility.FromJson<PlayRecordsDTO>(responseText);
+                Debug.Log($"id : {resp.game_id}, stage : {resp.stage}, score : {resp.score}, playtime :  {resp.play_datetime}");
             }
         }
     }
