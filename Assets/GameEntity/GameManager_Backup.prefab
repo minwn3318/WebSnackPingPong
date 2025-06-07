@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6743140454467766180}
   - component: {fileID: 853651580269828388}
   m_Layer: 0
-  m_Name: GameManager
+  m_Name: GameManager_Backup
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -47,10 +47,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30ddf3cf3076dc246a2699399a39c070, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  firstBlockGroup: {fileID: 0}
-  secondBlockGroup: {fileID: 0}
-  score: 0
-  stage: 0
+  lastDiamondXPos: 0
+  playerScript: {fileID: 0}
+  countdownTMP: {fileID: 0}
+  gameElementsToEnable: {fileID: 0}
+  scoreTMP: {fileID: 0}
+  stageTMP: {fileID: 0}
+  resultPanel: {fileID: 0}
+  gameOverTMP: {fileID: 0}
+  finalScoreTMP: {fileID: 0}
 --- !u!114 &853651580269828388
 MonoBehaviour:
   m_ObjectHideFlags: 0

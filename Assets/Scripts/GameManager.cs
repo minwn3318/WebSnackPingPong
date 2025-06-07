@@ -13,11 +13,18 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TMP_Text countdownTMP;
     [SerializeField] private GameObject gameElementsToEnable;
     [SerializeField] private TMP_Text scoreTMP;
+    [SerializeField] private TMP_Text stageTMP;
     [SerializeField] private GameObject resultPanel;
     [SerializeField] private TMP_Text gameOverTMP;
     [SerializeField] private TMP_Text finalScoreTMP;
+    [SerializeField] private GameObject countdownPanel;
+    [SerializeField] private TMP_Text countdownText;
+    [SerializeField] private TMP_Text resultStageTMP;
+
+
 
     private int score = 0;
+    private int stageCount = 0;
     private bool gameStarted = false;
     private bool gameOver = false;
     private int ballCount = 0;
@@ -45,6 +52,7 @@ public class GameManager : MonoBehaviour
     {
         gameElementsToEnable.SetActive(false);
         countdownTMP.gameObject.SetActive(true);
+        countdownPanel.SetActive(true);
 
         int count = 3;
         while (count > 0)
@@ -56,7 +64,7 @@ public class GameManager : MonoBehaviour
 
         countdownTMP.text = "Start!";
         yield return new WaitForSeconds(1f);
-
+        countdownPanel.SetActive(false);
         countdownTMP.gameObject.SetActive(false);
         gameElementsToEnable.SetActive(true);
 
@@ -93,11 +101,33 @@ public class GameManager : MonoBehaviour
         UpdateScoreUI();
     }
 
+    public void IncreaseStage()
+    {
+        stageCount++;
+        Debug.Log($"[DEBUG] Stage Increased: {stageCount}");
+
+        if (stageTMP == null)
+            Debug.LogError("StageTMP is NULL!");
+        else
+            stageTMP.text = $"Stage: {stageCount}";
+    }
+
+
+
+
     private void UpdateScoreUI()
     {
         if (scoreTMP != null)
-            scoreTMP.text = "Score: " + score;
+            scoreTMP.text = $"Score: {score}";
+        else
+            Debug.LogError($"StageTMP is NULL! (GameObject: {this.gameObject.name})");
+
+        if (stageTMP != null)
+            stageTMP.text = $"Stage: {stageCount}";
+        else
+            Debug.LogError($"StageTMP is NULL! (GameObject: {this.gameObject.name})");
     }
+
 
     public void SetBallCount(int count)
     {
@@ -168,7 +198,7 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(0.1f); // 안정화 유예
 
         GameObject newStage = StageManager.Instance.GenerateStage();
-        yield return StartCoroutine(StageManager.Instance.MoveStageUp(newStage));
+        //yield return StartCoroutine(StageManager.Instance.MoveStageUp(newStage));
 
         playerScript.MoveToNewStage();
         playerScript.EnableInput();
@@ -176,21 +206,21 @@ public class GameManager : MonoBehaviour
 
 
 
-    private IEnumerator HandleStageChange()
-    {
-        // 기존 스테이지 제거
-        //StageManager.Instance.ClearCurrentStage();
-        //yield return new WaitForSeconds(0.2f);
+    //private IEnumerator HandleStageChange()
+    //{
+    //    // 기존 스테이지 제거
+    //    //StageManager.Instance.ClearCurrentStage();
+    //    //yield return new WaitForSeconds(0.2f);
 
-        // 새 스테이지 생성 (아래쪽 y = -22 부근에서 시작)
-        GameObject newStage = StageManager.Instance.GenerateStage();
+    //    // 새 스테이지 생성 (아래쪽 y = -22 부근에서 시작)
+    //    GameObject newStage = StageManager.Instance.GenerateStage();
 
-        // 위로 이동 (y=0까지 올라옴)
-        yield return StartCoroutine(StageManager.Instance.MoveStageUp(newStage));
+    //    // 위로 이동 (y=0까지 올라옴)
+    //    //yield return StartCoroutine(StageManager.Instance.MoveStageUp(newStage));
 
-        // 플레이어는 y=10
-        playerScript.EnableInput();
-    }
+    //    // 플레이어는 y=10
+    //    playerScript.EnableInput();
+    //}
 
 
 
@@ -211,6 +241,9 @@ public class GameManager : MonoBehaviour
 
         resultPanel.SetActive(true);
         finalScoreTMP.text = "Score: " + score;
+
+        if (resultStageTMP != null)
+            resultStageTMP.text = "Stage: " + stageCount;
 
         StartCoroutine(LoadUserInfoScene());
     }
