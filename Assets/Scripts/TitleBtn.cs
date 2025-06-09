@@ -123,9 +123,7 @@ public class TitleBtn : MonoBehaviour
         }
         UnityWebRequest.ClearCookieCache();
         StartCoroutine(UserJoin(inputId));
-        UnityWebRequest.ClearCookieCache();
-        StartCoroutine(UserLogin(inputId));
-        StartCoroutine(Waitting(2f));
+        StartCoroutine(Waitting(1f));
     }
 
     private void SetCanvasGroup(CanvasGroup cg, bool state)
@@ -194,6 +192,18 @@ public class TitleBtn : MonoBehaviour
         {
             string responseText = request.downloadHandler.text;
             payload = JsonUtility.FromJson<UserIdDTO>(responseText);
+
+            string setCookie = request.GetResponseHeader("Set-Cookie");
+            if (!string.IsNullOrEmpty(setCookie))
+            {
+                string jsession = ParseAndSaveCookie(setCookie, "JSESSIONID");
+                if (!string.IsNullOrEmpty(jsession))
+                {
+                    PlayerPrefs.SetString("JSESSIONID", jsession);
+                    PlayerPrefs.SetString("nickname", userid);
+                    PlayerPrefs.Save();
+                }
+            }
             message = payload.message;
         }
         catch (Exception ex)
