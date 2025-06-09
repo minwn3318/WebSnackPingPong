@@ -44,7 +44,7 @@ public class Block : MonoBehaviour
             countText.text = count.ToString();
             countText.alignment = TextAlignmentOptions.Center;
             countText.fontSize = 5;
-            countText.color = Color.black;
+            countText.color = Color.white;
         }
     }
 

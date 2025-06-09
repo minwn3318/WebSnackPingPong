@@ -25,9 +25,8 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip loadingSceneClip;
 
     [Header("Volume Settings")]
-    [Range(0f, 1f)][SerializeField] private float masterVolume = 1f;
-    [Range(0f, 1f)][SerializeField] private float bgmVolume = 1f;
-    [Range(0f, 1f)][SerializeField] private float sfxVolume = 1f;
+    [Range(0f, 1f)][SerializeField] private float bgmVolume = 0.5f;
+    [Range(0f, 1f)][SerializeField] private float sfxVolume = 0.5f;
 
     private void Awake()
     {
@@ -75,9 +74,28 @@ public class AudioManager : MonoBehaviour
             return;
         }
 
-        sfxSource.PlayOneShot(clip, sfxVolume * masterVolume);
+        sfxSource.PlayOneShot(clip, sfxVolume);
     }
 
+    public void SetBGMVolume(float volume)
+    {
+        bgmVolume = Mathf.Clamp01(volume);
+        ApplyVolumeSettings();
+    }
+
+    public void SetSFXVolume(float volume)
+    {
+        sfxVolume = Mathf.Clamp01(volume);
+        ApplyVolumeSettings();
+    }
+
+    private void ApplyVolumeSettings()
+    {
+        if (bgmSource != null)
+            bgmSource.volume = bgmVolume;
+        if (sfxSource != null)
+            sfxSource.volume = sfxVolume;
+    }
     public void PlayBallLaunch()
     {
         PlaySFX(ballLaunchClip);
@@ -120,24 +138,5 @@ public class AudioManager : MonoBehaviour
     {
         PlaySFX(loadingSceneClip);
     }
-    
-    public void SetBGMVolume(float volume)
-    {
-        bgmVolume = Mathf.Clamp01(volume);
-        ApplyVolumeSettings();
-    }
-
-    public void SetSFXVolume(float volume)
-    {
-        sfxVolume = Mathf.Clamp01(volume);
-        ApplyVolumeSettings();
-    }
-
-    private void ApplyVolumeSettings()
-    {
-        if (bgmSource != null)
-            bgmSource.volume = bgmVolume * masterVolume;
-        if (sfxSource != null)
-            sfxSource.volume = sfxVolume * masterVolume;
-    }
+   
 }

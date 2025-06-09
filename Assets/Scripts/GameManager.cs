@@ -2,7 +2,18 @@ using System.Collections;
 using UnityEngine;
 using TMPro;
 using UnityEngine.SceneManagement;
+using System;
+using System.Text;
+using UnityEngine.Networking;
 
+[Serializable]
+public class PlayRecordsDTO
+{
+    public string game_id;
+    public int stage;
+    public int score;
+    public string play_datetime;
+}
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
@@ -21,7 +32,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TMP_Text countdownText;
     [SerializeField] private TMP_Text resultStageTMP;
 
-
+    private const string postURL = "http://113.198.229.158:1435/shooting-miner/play-records/save";
 
     private int score = 0;
     private int stageCount = 0;
@@ -163,16 +174,6 @@ public class GameManager : MonoBehaviour
         diamondHit = true;
     }
     
-    //private IEnumerator WaitForBallsThenStageChange()
-    //{
-    //    // 공 회수 대기
-    //    while (ballReturnCount < ballCount)
-    //    {
-    //        yield return null;
-    //    }
-
-    //    yield return StartCoroutine(HandleStageChange());
-    //}
 
     private IEnumerator WaitAndHandleStageChange()
     {
@@ -200,31 +201,10 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(0.1f); // 안정화 유예
 
         GameObject newStage = StageManager.Instance.GenerateStage();
-        //yield return StartCoroutine(StageManager.Instance.MoveStageUp(newStage));
 
         playerScript.MoveToNewStage();
         playerScript.EnableInput();
     }
-
-
-
-    //private IEnumerator HandleStageChange()
-    //{
-    //    // 기존 스테이지 제거
-    //    //StageManager.Instance.ClearCurrentStage();
-    //    //yield return new WaitForSeconds(0.2f);
-
-    //    // 새 스테이지 생성 (아래쪽 y = -22 부근에서 시작)
-    //    GameObject newStage = StageManager.Instance.GenerateStage();
-
-    //    // 위로 이동 (y=0까지 올라옴)
-    //    //yield return StartCoroutine(StageManager.Instance.MoveStageUp(newStage));
-
-    //    // 플레이어는 y=10
-    //    playerScript.EnableInput();
-    //}
-
-
 
     public void GameOver()
     {
@@ -246,7 +226,7 @@ public class GameManager : MonoBehaviour
 
         if (resultStageTMP != null)
             resultStageTMP.text = "Stage: " + stageCount;
-
+        StartCoroutine(CreatePlayRecord(stageCount, score));
         StartCoroutine(LoadUserInfoScene());
     }
 
@@ -267,14 +247,53 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator LoadUserInfoScene()
     {
-        Debug.Log("LoadUserInfoScene 실행됨");
         yield return new WaitForSecondsRealtime(3f);
-        Debug.Log("씬 전환 시도");
         SceneManager.LoadScene("UserInfoScene");
     }
 
     public bool IsGameOver()
     {
         return gameOver;
+    }
+
+    IEnumerator CreatePlayRecord(int stage, int score)
+    {
+        // 보낼 데이터를 JSON 문자열로 생성
+        var payload = new PlayRecordsDTO
+        {
+            game_id = "",
+            stage = stage,
+            score = score,
+            play_datetime = DateTime.Now.ToString("yyyy-MM-dd'T'HH:mm:ss")
+        };
+        string jsonData = JsonUtility.ToJson(payload);
+
+        // UnityWebRequest 생성 (POST + JSON)
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonData);
+        using (UnityWebRequest request = new UnityWebRequest(postURL, "POST"))
+        {
+            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("Content-Type", "application/json");
+            request.SetRequestHeader("Accept", "application/json");
+
+            string jsession = PlayerPrefs.GetString("JSESSIONID");
+            request.SetRequestHeader("Cookie", $"JSESSIONID={jsession}");
+
+            // 요청 전송
+            yield return request.SendWebRequest();
+
+            // 에러 체크
+            if (request.result == UnityWebRequest.Result.ConnectionError ||
+                request.result == UnityWebRequest.Result.ProtocolError)
+            {
+                Debug.LogError($"PostRecordAPIFront - 54 POST Error: {request.error}");
+            }
+            else
+            {
+                string responseText = request.downloadHandler.text;
+                PlayRecordsDTO resp = JsonUtility.FromJson<PlayRecordsDTO>(responseText);
+            }
+        }
     }
 }

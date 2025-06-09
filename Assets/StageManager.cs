@@ -82,27 +82,4 @@ public class StageManager : MonoBehaviour
         currentStage = stageGroup; // 현재 스테이지 저장
         return stageGroup;
     }
-
-    // 스테이지를 위로 이동시키는 애니메이션
-    //public IEnumerator MoveStageUp(GameObject stageGroup)
-    //{
-    //    isStageMoving = true;
-
-    //    float moveTime = 1.0f;
-    //    float elapsedTime = 0f;
-
-    //    Vector3 startPos = stageGroup.transform.position;
-    //    Vector3 endPos = new Vector3(startPos.x, -blockSize * height / 2f, startPos.z);
-
-    //    while (elapsedTime < moveTime)
-    //    {
-    //        elapsedTime += Time.deltaTime;
-    //        float t = elapsedTime / moveTime;
-    //        stageGroup.transform.position = Vector3.Lerp(startPos, endPos, t);
-    //        yield return null;
-    //    }
-
-    //    stageGroup.transform.position = endPos;
-    //    isStageMoving = false;
-    //}
 }

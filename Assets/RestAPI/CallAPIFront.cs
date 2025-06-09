@@ -6,10 +6,6 @@ using UnityEngine.Networking;
 
 public class CallAPIFront : MonoBehaviour
 {
-    public PostLoginJoinAPIFront PostLoginJoinAPIFront;
-    public GetRankingAPIFront GetRankingAPIFront;
-    public PostRecordAPIFront PostRecordAPIFront;
-    public PostLogoutAPIFront PostLogoutAPIFront;
 
     [Header("stage")]
     public int st;
@@ -25,42 +21,7 @@ public class CallAPIFront : MonoBehaviour
         {
             StartCoroutine(Hello());
         }
-        if (Input.GetKeyUp(KeyCode.S))
-        {
-            message = PostLoginJoinAPIFront.SendJoin("tesrer01");
-        }
-        if (Input.GetKeyUp(KeyCode.D))
-        {
-            message = PostLoginJoinAPIFront.SendJoinCheck("tesrer01");
-        }
-        if (Input.GetKeyUp(KeyCode.F))
-        {
-            message = PostLoginJoinAPIFront.SendLogin("tesrer01");
-        }
-        if (Input.GetKeyUp(KeyCode.G))
-        {
-            GetRankingAPIFront.ReciveMaxStage();
-        }
-        if (Input.GetKeyUp(KeyCode.H))
-        {
-            GetRankingAPIFront.ReciveMaxScore();
-        }
-        if (Input.GetKeyUp(KeyCode.J))
-        {
-            GetRankingAPIFront.ReciveMaxTotal();
-        }
-        if (Input.GetKeyUp(KeyCode.K))
-        {
-            GetRankingAPIFront.ReciveTopUsers();
-        }
-        if (Input.GetKeyUp(KeyCode.L))
-        {
-            PostRecordAPIFront.SendRecord(st, sc);
-        }
-        if (Input.GetKeyUp(KeyCode.P))
-        {
-            PostLogoutAPIFront.SendLogout();
-        }
+
     }
     IEnumerator Hello()
     {

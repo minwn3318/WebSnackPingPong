@@ -1,19 +1,29 @@
-using System.Collections;
+ï»¿using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
+using System;
+using System.Text;
+using UnityEngine.Networking;
+using static System.Net.WebRequestMethods;
+using UnityEngine.Windows;
 
 //public enum BTNType { New, Option, Back }
-
+[Serializable]
+public class UserIdDTO
+{
+    public string game_id;
+    public string message;
+}
 public class TitleBtn : MonoBehaviour
 {
     [Header("Main Panels")]
-    public CanvasGroup mainGroup;         // ¸ŞÀÎ UI ±×·ì
-    public GameObject loginPanel;         // ·Î±×ÀÎ ÆĞ³Î
-    public GameObject confirmPanel;       // À¯Àú È®ÀÎ ÆĞ³Î
+    public CanvasGroup mainGroup;         // ë©”ì¸ UI ê·¸ë£¹
+    public GameObject loginPanel;         // ë¡œê·¸ì¸ íŒ¨ë„
+    public GameObject confirmPanel;       // ìœ ì € í™•ì¸ íŒ¨ë„
 
     [Header("Option Menu")]
-    public CanvasGroup optionGroup;       // ¿É¼Ç ¸Ş´º ±×·ì
+    public CanvasGroup optionGroup;       // ì˜µì…˜ ë©”ë‰´ ê·¸ë£¹
 
     [Header("UI Elements")]
     public GameObject startButton;
@@ -21,10 +31,11 @@ public class TitleBtn : MonoBehaviour
     public TMP_Text confirmText;
     public GameObject titleImage;
 
-    [Header("JoinLogin")]
-    [SerializeField] private PostLoginJoinAPIFront loginJoin;
     [Header("save message")]
     private string currentUserId;
+
+    [Header("Message")]
+    [SerializeField] private string message;
 
     void Start()
     {
@@ -37,7 +48,6 @@ public class TitleBtn : MonoBehaviour
     public void OnOptionButton()
     {
         AudioManager.Instance.PlaybuttonClickClip();
-        Debug.Log("¿É¼Ç ¹öÆ° Å¬¸¯");
         SetCanvasGroup(optionGroup, true);
         loginPanel.SetActive(false);
         confirmPanel.SetActive(false);
@@ -51,7 +61,6 @@ public class TitleBtn : MonoBehaviour
     public void OnStartButton()
     {
         AudioManager.Instance.PlaybuttonSelectClip();
-        Debug.Log("½ÃÀÛ ¹öÆ° Å¬¸¯ ¡æ ·Î±×ÀÎ ÆĞ³Î ¿­±â");
         SetCanvasGroup(mainGroup, false);
         loginPanel.SetActive(true);
     }
@@ -59,7 +68,6 @@ public class TitleBtn : MonoBehaviour
     public void OnBackButton()
     {
         AudioManager.Instance.PlaybuttonClickClip();
-        Debug.Log("¿É¼Ç ¸Ş´º ´İ±â");
         SetCanvasGroup(optionGroup, false);
 
         if (titleImage != null)
@@ -75,26 +83,30 @@ public class TitleBtn : MonoBehaviour
 
         if (string.IsNullOrEmpty(inputId))
         {
-            Debug.Log("¾ÆÀÌµğ¸¦ ÀÔ·ÂÇÏ¼¼¿ä.");
+            Debug.Log("ì•„ì´ë””ë¥¼ ì…ë ¥í•˜ì„¸ìš”.");
             return;
         }
+
         currentUserId = inputId;
         confirmText.text = $"Is '{currentUserId}' you?";
         loginPanel.SetActive(false);
-        confirmPanel.SetActive(true);
+        confirmPanel.SetActive(true); 
+
+        PlayerPrefs.DeleteAll();
+        UnityWebRequest.ClearCookieCache();
     }
 
     public void OnConfirmYes()
     {
+        StartCoroutine(UserLogin(currentUserId));
         AudioManager.Instance.PlaybuttonSelectClip();
-        Debug.Log("À¯Àú È®ÀÎ ¿Ï·á ¡æ ·Îµù È­¸éÀ¸·Î ÀÌµ¿");
-        SceneManager.LoadScene("Loading");
+        StartCoroutine(Waitting(1f));
     }
 
     public void OnConfirmNo()
     {
         AudioManager.Instance.PlaybuttonClickClip();
-        Debug.Log("À¯Àú È®ÀÎ Ãë¼Ò ¡æ ·Î±×ÀÎ ÆĞ³Î·Î µ¹¾Æ°¨");
+        currentUserId = "";
         confirmPanel.SetActive(false);
         loginPanel.SetActive(true);
     }
@@ -106,23 +118,14 @@ public class TitleBtn : MonoBehaviour
 
         if (string.IsNullOrEmpty(inputId))
         {
-            Debug.Log("¾ÆÀÌµğ¸¦ ÀÔ·ÂÇÏ¼¼¿ä.");
+            Debug.Log("ì•„ì´ë””ë¥¼ ì…ë ¥í•˜ì„¸ìš”.");
             return;
         }
-
-        Debug.Log("»õ °èÁ¤ »ı¼º ¿äÃ»: " + inputId);
-
-        // [µ¥ÀÌÅÍº£ÀÌ½º ºÎºĞ ½ÃÀÛ]
-        // ¿©±â¿¡ µ¥ÀÌÅÍº£ÀÌ½º¿¡ »õ °èÁ¤À» »ı¼ºÇÏ´Â ÄÚµå°¡ µé¾î°¡¾ß ÇÔ
-        // [µ¥ÀÌÅÍº£ÀÌ½º ºÎºĞ ³¡]
-
-        Debug.Log("»õ °èÁ¤ »ı¼º ¿Ï·á ¡æ ·Îµù È­¸éÀ¸·Î ÀÌµ¿");
-        SceneManager.LoadScene("Loading");
-    }
-
-    private bool CheckUserInDatabase(string userId)
-    {
-        return userId.ToLower() == "user1" || userId.ToLower() == "user2";
+        UnityWebRequest.ClearCookieCache();
+        StartCoroutine(UserJoin(inputId));
+        UnityWebRequest.ClearCookieCache();
+        StartCoroutine(UserLogin(inputId));
+        StartCoroutine(Waitting(2f));
     }
 
     private void SetCanvasGroup(CanvasGroup cg, bool state)
@@ -135,8 +138,8 @@ public class TitleBtn : MonoBehaviour
 
     void Update()
     {
-        // ¾Èµå·ÎÀÌµå µÚ·Î°¡±â(ESC) °¨Áö
-        if (Input.GetKeyDown(KeyCode.Escape))
+        // ì•ˆë“œë¡œì´ë“œ ë’¤ë¡œê°€ê¸°(ESC) ê°ì§€
+        if (UnityEngine.Input.GetKeyDown(KeyCode.Escape))
         {
             if (loginPanel.activeSelf)
             {
@@ -156,8 +159,120 @@ public class TitleBtn : MonoBehaviour
             }
             else
             {
-                Debug.Log("¾Û Á¾·á Ã³¸® Ãß°¡ °¡´É");
+                Application.Quit();
             }
         }
+    }
+    IEnumerator Waitting(float time)
+    {
+        yield return new WaitForSeconds(time);
+        SceneManager.LoadScene("Loading");
+    }
+
+    IEnumerator UserJoin(string userid)
+    {
+        string url = "http://113.198.229.158:1435/shooting-miner/userids/join";
+        // 1) JSON í˜ì´ë¡œë“œ ì¤€ë¹„
+        var payload = new UserIdDTO { game_id = userid };
+        string jsonData = JsonUtility.ToJson(payload);
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonData);
+        // 2) UnityWebRequest ìƒì„± & í—¤ë”/íƒ€ì„ì•„ì›ƒ ì„¤ì •
+        UnityWebRequest request = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST)
+        {
+            uploadHandler = new UploadHandlerRaw(bodyRaw),
+            downloadHandler = new DownloadHandlerBuffer(),
+            timeout = 10
+        };
+        request.SetRequestHeader("Content-Type", "application/json");
+        request.SetRequestHeader("Accept", "application/json");
+
+        // 3) ë„¤íŠ¸ì›Œí¬ ìš”ì²­ â€” yieldì€ ì˜¤ì§ ì´ ë¶€ë¶„ì—ë§Œ!
+        yield return request.SendWebRequest();
+
+        // 4) ê²°ê³¼ ì²˜ë¦¬ ë° ì˜ˆì™¸ ì•ˆì „ë§
+        try
+        {
+            string responseText = request.downloadHandler.text;
+            payload = JsonUtility.FromJson<UserIdDTO>(responseText);
+            message = payload.message;
+        }
+        catch (Exception ex)
+        {
+            // JSON íŒŒì‹±ì´ë‚˜ ë‚´ë¶€ ë¡œì§ ì—ëŸ¬ê¹Œì§€ ì•ˆì „í•˜ê²Œ ì¡ì•„ëƒ„
+            Debug.LogError($"UserJoin Exception: {ex.GetType().Name} â€“ {ex.Message}");
+            message = payload.message + " : " + ex.ToString();
+        }
+        finally
+        {
+            // ê¼­ Dispose() í•´ ì¤˜ì•¼ í•¸ë“¤ ëˆ„ìˆ˜ ë°©ì§€
+            request.Dispose();
+        }
+    }
+
+    IEnumerator UserLogin(string userid)
+    {
+        string url = "http://113.198.229.158:1435/shooting-miner/userids/login";
+
+        UserIdDTO payload = new UserIdDTO { game_id = userid };
+        string jsonData = JsonUtility.ToJson(payload);
+        byte[] bodyRaw = Encoding.UTF8.GetBytes(jsonData);
+
+        // 2) UnityWebRequest ìƒì„± & í—¤ë”/íƒ€ì„ì•„ì›ƒ ì„¤ì •
+        UnityWebRequest request = new UnityWebRequest(url, UnityWebRequest.kHttpVerbPOST)
+        {
+            uploadHandler = new UploadHandlerRaw(bodyRaw),
+            downloadHandler = new DownloadHandlerBuffer(),
+            timeout = 10
+        };
+        request.SetRequestHeader("Content-Type", "application/json");
+        request.SetRequestHeader("Accept", "application/json");
+
+        // 3) ë„¤íŠ¸ì›Œí¬ ìš”ì²­ â€” yieldì€ ì˜¤ì§ ì´ ë¶€ë¶„ì—ë§Œ!
+        yield return request.SendWebRequest();
+
+        // ì—ëŸ¬ ì²´
+        try
+        {
+            string responseText = request.downloadHandler.text;
+            payload = JsonUtility.FromJson<UserIdDTO>(responseText);
+
+            string setCookie = request.GetResponseHeader("Set-Cookie");
+            if (!string.IsNullOrEmpty(setCookie))
+            {
+                string jsession = ParseAndSaveCookie(setCookie, "JSESSIONID");
+                if (!string.IsNullOrEmpty(jsession))
+                {
+                    PlayerPrefs.SetString("JSESSIONID", jsession);
+                    PlayerPrefs.SetString("nickname", userid);
+                    PlayerPrefs.Save();
+                }
+            }
+            message = payload.message;
+        }
+        catch (Exception ex)
+        {
+            // JSON íŒŒì‹±ì´ë‚˜ ë‚´ë¶€ ë¡œì§ ì—ëŸ¬ê¹Œì§€ ì•ˆì „í•˜ê²Œ ì¡ì•„ëƒ„
+            Debug.LogError($"UserJoin Exception: {ex.GetType().Name} â€“ {ex.Message}");
+            message = payload.message + " : " + ex.ToString();
+        }
+        finally
+        {
+            // ê¼­ Dispose() í•´ ì¤˜ì•¼ í•¸ë“¤ ëˆ„ìˆ˜ ë°©ì§€
+            request.Dispose();
+        }
+    }
+
+    public string ParseAndSaveCookie(string setCookieHeader, string cookieName)
+    {
+        string[] parts = setCookieHeader.Split(';');
+        foreach (var part in parts)
+        {
+            var kv = part.Trim().Split('=');
+            if (kv.Length == 2 && kv[0] == cookieName)
+            {
+                return kv[1];
+            }
+        }
+        return null;
     }
 }
