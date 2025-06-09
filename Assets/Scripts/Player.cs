@@ -74,11 +74,10 @@ public class Player : MonoBehaviour
     {
         if (!turningAllow) return;
 
-        pointerPos = context.ReadValue<Vector2>();
-        directPos = -(pointerPos - (Vector2)playerTrans.position).normalized;
-
-        if (Vector2.Dot(playerPos, directPos) < 0)
-            return;
+        pointerPos = (context.ReadValue<Vector2>());
+        pointerPos.x = -(pointerPos.x);  
+        pointerPos.x += 500f;
+        directPos = ((Vector2)playerTrans.position - pointerPos).normalized;
 
         playerTrans.up = directPos;
     }
@@ -89,6 +88,7 @@ public class Player : MonoBehaviour
 
         for (int i = 0; i < polling.Capacity; i++)
         {
+            AudioManager.Instance.PlayBallLaunch();
             GameObject obj_v = polling.PopQueue();
             if (obj_v == null) continue;
 

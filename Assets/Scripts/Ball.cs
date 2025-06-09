@@ -73,6 +73,7 @@ public class Ball : MonoBehaviour // 공 오브젝트이다
         if (collision.collider.CompareTag("Diamond")) // 다이아몬드에 부딪히면 점수 추가
         {
             GameManager.Instance.AddScore(100); // 점수 100점 추가
+            GameManager.Instance.IncreaseStage();
             GameObject diamond = collision.gameObject;
             GameManager.Instance.OnDiamondHit(); // 먼저 처리
             Destroy(diamond); // 나중에 파괴
